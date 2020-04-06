@@ -1,0 +1,34 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 15
+VisualStudioVersion = 15.0.28307.539
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Vectty", "Vectty\Vectty.csproj", "{6AAD4432-9E56-4803-ACEF-50F6FC3F9235}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Renderers", "Renderers", "{4594FF1B-155E-432E-A4C6-96F153AE4652}"
+	ProjectSection(SolutionItems) = preProject
+		Renderers\VecttyRenderer.zxbas = Renderers\VecttyRenderer.zxbas
+	EndProjectSection
+EndProject
+Project("{54435603-DBB4-11D2-8724-00A0C9A8B90C}") = "VecttyInstaller", "VecttyInstaller\VecttyInstaller.vdproj", "{C86AB378-8AF4-4843-9B0B-2C9D5D01F5D4}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{6AAD4432-9E56-4803-ACEF-50F6FC3F9235}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6AAD4432-9E56-4803-ACEF-50F6FC3F9235}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6AAD4432-9E56-4803-ACEF-50F6FC3F9235}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6AAD4432-9E56-4803-ACEF-50F6FC3F9235}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C86AB378-8AF4-4843-9B0B-2C9D5D01F5D4}.Debug|Any CPU.ActiveCfg = Debug
+		{C86AB378-8AF4-4843-9B0B-2C9D5D01F5D4}.Release|Any CPU.ActiveCfg = Release
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {3C55C531-4596-4EE9-BE8D-1F84037F0B4B}
+	EndGlobalSection
+EndGlobal
