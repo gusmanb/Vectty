@@ -27,7 +27,7 @@
         }
         "Entry"
         {
-        "MsmKey" = "8:_6E97470C1D1841BDB6B84E88D7FB0E1D"
+        "MsmKey" = "8:_45B67329B6C94C9CB1CB52D17BF207CA"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
         }
@@ -68,6 +68,14 @@
             "PrerequisitesLocation" = "2:1"
             "Url" = "8:"
             "ComponentsUrl" = "8:"
+                "Items"
+                {
+                    "{EDC2488A-8267-493A-A98E-7D9C3B36CDF3}:.NETFramework,Version=v4.7.2"
+                    {
+                    "Name" = "8:Microsoft .NET Framework 4.7.2 (x86 and x64)"
+                    "ProductCode" = "8:.NETFramework,Version=v4.7.2"
+                    }
+                }
             }
         }
         "Release"
@@ -92,6 +100,14 @@
             "PrerequisitesLocation" = "2:1"
             "Url" = "8:"
             "ComponentsUrl" = "8:"
+                "Items"
+                {
+                    "{EDC2488A-8267-493A-A98E-7D9C3B36CDF3}:.NETFramework,Version=v4.7.2"
+                    {
+                    "Name" = "8:Microsoft .NET Framework 4.7.2 (x86 and x64)"
+                    "ProductCode" = "8:.NETFramework,Version=v4.7.2"
+                    }
+                }
             }
         }
     }
@@ -153,10 +169,10 @@
             "IsDependency" = "11:TRUE"
             "IsolateTo" = "8:"
             }
-            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_6E97470C1D1841BDB6B84E88D7FB0E1D"
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_45B67329B6C94C9CB1CB52D17BF207CA"
             {
-            "SourcePath" = "8:..\\Renderers\\VecttyRenderer.zxbas"
-            "TargetName" = "8:VecttyRenderer.zxbas"
+            "SourcePath" = "8:..\\VecttySupport\\TapeFiles\\VecttySinclairBasicHelpers.tap"
+            "TargetName" = "8:VecttySinclairBasicHelpers.tap"
             "Tag" = "8:"
             "Folder" = "8:_C5483697490740E1A3351998B51AAC32"
             "Condition" = "8:"
@@ -361,18 +377,18 @@
         }
         "Shortcut"
         {
-            "{970C0BB2-C7D0-45D7-ABFA-7EC378858BC0}:_0B74E2315FB04321B6BFE052EF36072B"
+            "{970C0BB2-C7D0-45D7-ABFA-7EC378858BC0}:_1BCEBFFB8DAD4E54AF88693B0053E91F"
             {
-            "Name" = "8:VecttyRenderer.zxbas"
+            "Name" = "8:Support tape for Sinclair Basic"
             "Arguments" = "8:"
             "Description" = "8:"
             "ShowCmd" = "3:1"
-            "IconIndex" = "3:0"
+            "IconIndex" = "3:32512"
             "Transitive" = "11:FALSE"
-            "Target" = "8:_6E97470C1D1841BDB6B84E88D7FB0E1D"
+            "Target" = "8:_45B67329B6C94C9CB1CB52D17BF207CA"
             "Folder" = "8:_5DC6A391AAB04F1599E348EF271A645C"
             "WorkingFolder" = "8:_C5483697490740E1A3351998B51AAC32"
-            "Icon" = "8:"
+            "Icon" = "8:_0287E08B729A46D7B8F2B425B1A8FBBB"
             "Feature" = "8:"
             }
             "{970C0BB2-C7D0-45D7-ABFA-7EC378858BC0}:_A4824FC560F54652BE5C28EA39CDCD56"

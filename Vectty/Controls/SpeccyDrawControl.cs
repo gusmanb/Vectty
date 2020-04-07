@@ -305,7 +305,7 @@ namespace Vectty
 
             return true;
         }
-        public bool ExportFile(string FileName, SpeccyDrawExportMode Mode, out string Error)
+        public bool ExportFile(string FileName, SpeccyDrawExportMode Mode, bool IncludeFunctions, string Identifier, string Address, out string Error)
         {
             try
             {
@@ -478,24 +478,31 @@ namespace Vectty
                 {
                     case SpeccyDrawExportMode.SinclairBasic:
 
-                        int line = 8999;
+                        int line = int.Parse(Address);
                         for (int buc = 0; buc < finalBuffer.Count; buc++)
                         {
                             if (buc % 32 == 0)
                             {
-                                line++;
-                                output.WriteLine();
+                                if (buc != 0)
+                                    output.WriteLine();
                                 output.Write($"{line} DATA {finalBuffer[buc]}");
+                                line++;
                             }
                             else
                                 output.Write($", {finalBuffer[buc]}");
+                        }
+
+                        if (IncludeFunctions)
+                        {
+                            output.WriteLine();
+                            output.Write(RenderFunctions.SinclairBasicFunction);
                         }
 
                         break;
 
                     case SpeccyDrawExportMode.BorielBasic:
 
-                        output.Write($"Dim vectImg({finalBuffer.Count - 1}) as uByte => {{ _\r\n    {finalBuffer[0]}");
+                        output.Write($"Dim {Identifier}({finalBuffer.Count - 1}) as uByte => {{ _\r\n    {finalBuffer[0]}");
 
                         for (int buc = 1; buc < finalBuffer.Count; buc++)
                         {
@@ -504,12 +511,20 @@ namespace Vectty
                             else
                                 output.Write($", {finalBuffer[buc]}");
                         }
+                        
                         output.Write(" _\r\n }");
+                        output.WriteLine();
+
+                        if (IncludeFunctions)
+                        {
+                            output.WriteLine();
+                            output.Write(RenderFunctions.ZXBasicFunction);
+                        }
                         break;
 
                     case SpeccyDrawExportMode.Assembler:
 
-                        output.WriteLine("vectImg:");
+                        output.WriteLine($".org #{Address}\r\n{Identifier}:");
 
                         for (int buc = 0; buc < finalBuffer.Count; buc++)
                             output.WriteLine($"    DEFB    {finalBuffer[buc]}");

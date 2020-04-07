@@ -314,7 +314,7 @@ namespace Vectty
                     return;
 
                 string err = "";
-                if (drawArea.ExportFile(dlg.FileName, dlg.Mode, out err))
+                if (drawArea.ExportFile(dlg.FileName, dlg.Mode, dlg.IncludeCode, dlg.Identifier, dlg.Address, out err))
                     MessageBox.Show("File exported", "Export");
                 else
                     MessageBox.Show(err, "Export");

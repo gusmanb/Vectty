@@ -14,6 +14,10 @@ namespace Vectty
     {
         public string FileName { get; set; }
         public SpeccyDrawExportMode Mode { get; set; }
+        public string Identifier { get; set; }
+        public string Address { get; set; }
+        public bool IncludeCode { get; set; }
+
         public ExportTypeSelector()
         {
             InitializeComponent();
@@ -22,21 +26,55 @@ namespace Vectty
 
         private void btnAccept_Click(object sender, EventArgs e)
         {
+            int parsed;
 
             if (string.IsNullOrWhiteSpace(txtPath.Text))
             {
-                MessageBox.Show("Specify file name");
+                MessageBox.Show("Specify file name", "Export");
                 return;
             }
 
             if (rbSinclair.Checked)
+            {
+                if (string.IsNullOrWhiteSpace(txtAddr.Text) || !int.TryParse(txtAddr.Text, out parsed))
+                {
+                    MessageBox.Show("Specify starting address for the data", "Export");
+                    return;
+                }
+
                 Mode = SpeccyDrawExportMode.SinclairBasic;
+            }
             else if (rbBoriel.Checked)
+            {
+                if (string.IsNullOrWhiteSpace(txtIdent.Text))
+                {
+                    MessageBox.Show("Specify data identifier", "Export");
+                    return;
+                }
+
                 Mode = SpeccyDrawExportMode.BorielBasic;
+            }
             else
+            {
+                if (string.IsNullOrWhiteSpace(txtAddr.Text) || !int.TryParse(txtAddr.Text, System.Globalization.NumberStyles.AllowHexSpecifier, System.Globalization.CultureInfo.InvariantCulture, out parsed))
+                {
+                    MessageBox.Show("Specify starting address for the data", "Export");
+                    return;
+                }
+
+                if (string.IsNullOrWhiteSpace(txtIdent.Text))
+                {
+                    MessageBox.Show("Specify data identifier", "Export");
+                    return;
+                }
+
                 Mode = SpeccyDrawExportMode.Assembler;
+            }
 
             FileName = txtPath.Text;
+            Identifier = txtIdent.Text;
+            Address = txtAddr.Text;
+            IncludeCode = ckInclude.Checked;
 
             DialogResult = DialogResult.OK;
 
@@ -56,6 +94,36 @@ namespace Vectty
                     return;
 
                 txtPath.Text = dlg.FileName;
+            }
+        }
+
+        private void rbAssembler_CheckedChanged(object sender, EventArgs e)
+        {
+            if (rbAssembler.Checked)
+            {
+                ckInclude.Enabled = false;
+                txtAddr.Enabled = true;
+                txtIdent.Enabled = true;
+            }
+        }
+
+        private void rbBoriel_CheckedChanged(object sender, EventArgs e)
+        {
+            if (rbBoriel.Checked)
+            {
+                ckInclude.Enabled = true;
+                txtAddr.Enabled = false;
+                txtIdent.Enabled = true;
+            }
+        }
+
+        private void rbSinclair_CheckedChanged(object sender, EventArgs e)
+        {
+            if (rbSinclair.Checked)
+            {
+                ckInclude.Enabled = true;
+                txtAddr.Enabled = true;
+                txtIdent.Enabled = false;
             }
         }
     }

@@ -77,6 +77,7 @@
       <DependentUpon>SpeccyDrawControl.cs</DependentUpon>
     </Compile>
     <Compile Include="ZXClasses\DrawClasses.cs" />
+    <Compile Include="ZXClasses\RenderFunctions.cs" />
     <EmbeddedResource Include="ExportTypeSelector.resx">
       <DependentUpon>ExportTypeSelector.cs</DependentUpon>
     </EmbeddedResource>

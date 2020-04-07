@@ -35,11 +35,16 @@
             this.rbAssembler = new System.Windows.Forms.RadioButton();
             this.txtPath = new System.Windows.Forms.TextBox();
             this.btnSelectPath = new System.Windows.Forms.Button();
+            this.txtIdent = new System.Windows.Forms.TextBox();
+            this.label1 = new System.Windows.Forms.Label();
+            this.ckInclude = new System.Windows.Forms.CheckBox();
+            this.label2 = new System.Windows.Forms.Label();
+            this.txtAddr = new System.Windows.Forms.TextBox();
             this.SuspendLayout();
             // 
             // btnAccept
             // 
-            this.btnAccept.Location = new System.Drawing.Point(124, 113);
+            this.btnAccept.Location = new System.Drawing.Point(124, 185);
             this.btnAccept.Name = "btnAccept";
             this.btnAccept.Size = new System.Drawing.Size(75, 23);
             this.btnAccept.TabIndex = 0;
@@ -50,7 +55,7 @@
             // btnCancel
             // 
             this.btnCancel.DialogResult = System.Windows.Forms.DialogResult.Cancel;
-            this.btnCancel.Location = new System.Drawing.Point(12, 113);
+            this.btnCancel.Location = new System.Drawing.Point(12, 185);
             this.btnCancel.Name = "btnCancel";
             this.btnCancel.Size = new System.Drawing.Size(75, 23);
             this.btnCancel.TabIndex = 1;
@@ -69,6 +74,7 @@
             this.rbSinclair.TabStop = true;
             this.rbSinclair.Text = "Export as Sinclair basic";
             this.rbSinclair.UseVisualStyleBackColor = true;
+            this.rbSinclair.CheckedChanged += new System.EventHandler(this.rbSinclair_CheckedChanged);
             // 
             // rbBoriel
             // 
@@ -79,6 +85,7 @@
             this.rbBoriel.TabIndex = 3;
             this.rbBoriel.Text = "Export as Boriel Basic";
             this.rbBoriel.UseVisualStyleBackColor = true;
+            this.rbBoriel.CheckedChanged += new System.EventHandler(this.rbBoriel_CheckedChanged);
             // 
             // rbAssembler
             // 
@@ -89,17 +96,18 @@
             this.rbAssembler.TabIndex = 4;
             this.rbAssembler.Text = "Export as assembler";
             this.rbAssembler.UseVisualStyleBackColor = true;
+            this.rbAssembler.CheckedChanged += new System.EventHandler(this.rbAssembler_CheckedChanged);
             // 
             // txtPath
             // 
-            this.txtPath.Location = new System.Drawing.Point(12, 81);
+            this.txtPath.Location = new System.Drawing.Point(12, 158);
             this.txtPath.Name = "txtPath";
             this.txtPath.Size = new System.Drawing.Size(134, 20);
             this.txtPath.TabIndex = 5;
             // 
             // btnSelectPath
             // 
-            this.btnSelectPath.Location = new System.Drawing.Point(153, 79);
+            this.btnSelectPath.Location = new System.Drawing.Point(153, 156);
             this.btnSelectPath.Name = "btnSelectPath";
             this.btnSelectPath.Size = new System.Drawing.Size(46, 23);
             this.btnSelectPath.TabIndex = 6;
@@ -107,13 +115,61 @@
             this.btnSelectPath.UseVisualStyleBackColor = true;
             this.btnSelectPath.Click += new System.EventHandler(this.btnSelectPath_Click);
             // 
+            // txtIdent
+            // 
+            this.txtIdent.Enabled = false;
+            this.txtIdent.Location = new System.Drawing.Point(65, 104);
+            this.txtIdent.Name = "txtIdent";
+            this.txtIdent.Size = new System.Drawing.Size(134, 20);
+            this.txtIdent.TabIndex = 7;
+            // 
+            // label1
+            // 
+            this.label1.AutoSize = true;
+            this.label1.Location = new System.Drawing.Point(12, 107);
+            this.label1.Name = "label1";
+            this.label1.Size = new System.Drawing.Size(47, 13);
+            this.label1.TabIndex = 8;
+            this.label1.Text = "Identifier";
+            // 
+            // ckInclude
+            // 
+            this.ckInclude.AutoSize = true;
+            this.ckInclude.Location = new System.Drawing.Point(12, 81);
+            this.ckInclude.Name = "ckInclude";
+            this.ckInclude.Size = new System.Drawing.Size(133, 17);
+            this.ckInclude.TabIndex = 9;
+            this.ckInclude.Text = "Include draw functions";
+            this.ckInclude.UseVisualStyleBackColor = true;
+            // 
+            // label2
+            // 
+            this.label2.AutoSize = true;
+            this.label2.Location = new System.Drawing.Point(12, 133);
+            this.label2.Name = "label2";
+            this.label2.Size = new System.Drawing.Size(45, 13);
+            this.label2.TabIndex = 11;
+            this.label2.Text = "Address";
+            // 
+            // txtAddr
+            // 
+            this.txtAddr.Location = new System.Drawing.Point(65, 130);
+            this.txtAddr.Name = "txtAddr";
+            this.txtAddr.Size = new System.Drawing.Size(134, 20);
+            this.txtAddr.TabIndex = 10;
+            // 
             // ExportTypeSelector
             // 
             this.AcceptButton = this.btnAccept;
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.CancelButton = this.btnCancel;
-            this.ClientSize = new System.Drawing.Size(211, 148);
+            this.ClientSize = new System.Drawing.Size(211, 219);
+            this.Controls.Add(this.label2);
+            this.Controls.Add(this.txtAddr);
+            this.Controls.Add(this.ckInclude);
+            this.Controls.Add(this.label1);
+            this.Controls.Add(this.txtIdent);
             this.Controls.Add(this.btnSelectPath);
             this.Controls.Add(this.txtPath);
             this.Controls.Add(this.rbAssembler);
@@ -141,5 +197,10 @@
         private System.Windows.Forms.RadioButton rbAssembler;
         private System.Windows.Forms.TextBox txtPath;
         private System.Windows.Forms.Button btnSelectPath;
+        private System.Windows.Forms.TextBox txtIdent;
+        private System.Windows.Forms.Label label1;
+        private System.Windows.Forms.CheckBox ckInclude;
+        private System.Windows.Forms.Label label2;
+        private System.Windows.Forms.TextBox txtAddr;
     }
 }
