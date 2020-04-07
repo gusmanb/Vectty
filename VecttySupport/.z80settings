@@ -1,0 +1,5 @@
+{
+  "DefaultTapeFile": null,
+  "DefaultAnnotationFile": "Annotations.disann",
+  "DefaultCodeFile": "Z80CodeFiles\\VecttySinclairBasicHelpers.z80asm"
+}

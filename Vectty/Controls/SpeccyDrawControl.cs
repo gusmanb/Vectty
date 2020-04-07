@@ -305,13 +305,15 @@ namespace Vectty
 
             return true;
         }
-        public bool ExportFile(string FileName, SpeccyDrawExportMode Mode)
+        public bool ExportFile(string FileName, SpeccyDrawExportMode Mode, out string Error)
         {
             try
             {
                 List<byte> cpActions = new List<byte>();
 
                 SCAction lastAction = null;
+
+                int yOffset = Mode == SpeccyDrawExportMode.SinclairBasic ? 175 : 191;
 
                 bool onPolygon = false;
 
@@ -331,7 +333,14 @@ namespace Vectty
                             onPolygon = true;
                             action = 250;
                             cpActions.Add(action);
-                            cpActions.Add((byte)(191 - currentAction.StartPoint.Y));
+
+                            if (yOffset - currentAction.StartPoint.Y < 0)
+                            {
+                                Error = "Incompatible with Sinclair Basic (out of bound)";
+                                return false;
+                            }
+
+                            cpActions.Add((byte)(yOffset - currentAction.StartPoint.Y));
                             cpActions.Add((byte)currentAction.StartPoint.X);
                         }
                         else
@@ -354,29 +363,65 @@ namespace Vectty
 
                             if (!onPolygon)
                             {
-                                cpActions.Add((byte)(191 - currentAction.StartPoint.Y));
+                                if (yOffset - currentAction.StartPoint.Y < 0)
+                                {
+                                    Error = "Incompatible with Sinclair Basic (out of bounds)";
+                                    return false;
+                                }
+
+                                cpActions.Add((byte)(yOffset - currentAction.StartPoint.Y));
                                 cpActions.Add((byte)currentAction.StartPoint.X);
                             }
 
-                            cpActions.Add((byte)(191 - currentAction.EndPoint.Y));
+                            if (yOffset - currentAction.EndPoint.Y < 0)
+                            {
+                                Error = "Incompatible with Sinclair Basic (out of bounds)";
+                                return false;
+                            }
+
+                            cpActions.Add((byte)(yOffset - currentAction.EndPoint.Y));
                             cpActions.Add((byte)currentAction.EndPoint.X);
 
                             break;
 
                         case SpeccyDrawControlTool.Rectangle:
 
-                            cpActions.Add((byte)(191 - currentAction.StartPoint.Y));
+                            if (yOffset - currentAction.StartPoint.Y < 0)
+                            {
+                                Error = "Incompatible with Sinclair Basic (out of bounds)";
+                                return false;
+                            }
+
+                            if (yOffset - currentAction.EndPoint.Y < 0)
+                            {
+                                Error = "Incompatible with Sinclair Basic (out of bounds)";
+                                return false;
+                            }
+
+                            cpActions.Add((byte)(yOffset - currentAction.StartPoint.Y));
                             cpActions.Add((byte)currentAction.StartPoint.X);
-                            cpActions.Add((byte)(191 - currentAction.EndPoint.Y));
+                            cpActions.Add((byte)(yOffset - currentAction.EndPoint.Y));
                             cpActions.Add((byte)currentAction.EndPoint.X);
 
                             break;
 
                         case SpeccyDrawControlTool.Arc:
 
-                            cpActions.Add((byte)(191 - currentAction.StartPoint.Y));
+                            if (yOffset - currentAction.StartPoint.Y < 0)
+                            {
+                                Error = "Incompatible with Sinclair Basic (out of bounds)";
+                                return false;
+                            }
+
+                            if (yOffset - currentAction.EndPoint.Y < 0)
+                            {
+                                Error = "Incompatible with Sinclair Basic (out of bounds)";
+                                return false;
+                            }
+
+                            cpActions.Add((byte)(yOffset - currentAction.StartPoint.Y));
                             cpActions.Add((byte)currentAction.StartPoint.X);
-                            cpActions.Add((byte)(191 - currentAction.EndPoint.Y));
+                            cpActions.Add((byte)(yOffset - currentAction.EndPoint.Y));
                             cpActions.Add((byte)currentAction.EndPoint.X);
                             cpActions.Add((byte)((currentAction.Distance >> 8) & 0xFF));
                             cpActions.Add((byte)(currentAction.Distance & 0xFF));
@@ -385,7 +430,13 @@ namespace Vectty
 
                         case SpeccyDrawControlTool.Circle:
 
-                            cpActions.Add((byte)(191 - currentAction.StartPoint.Y));
+                            if (yOffset - currentAction.StartPoint.Y < 0)
+                            {
+                                Error = "Incompatible with Sinclair Basic (out of bounds)";
+                                return false;
+                            }
+
+                            cpActions.Add((byte)(yOffset - currentAction.StartPoint.Y));
                             cpActions.Add((byte)currentAction.StartPoint.X);
                             cpActions.Add((byte)currentAction.StartPoint.Distance(currentAction.EndPoint));
 
@@ -467,10 +518,10 @@ namespace Vectty
                 }
 
                 output.Close();
-
+                Error = "";
                 return true;
             }
-            catch { return false; }
+            catch(Exception ex) { Error = $"Unexpected error ({ex.Message})"; return false; }
         }
 
         private void CreateCheckered()

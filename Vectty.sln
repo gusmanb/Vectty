@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 15
-VisualStudioVersion = 15.0.28307.539
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.29926.136
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Vectty", "Vectty\Vectty.csproj", "{6AAD4432-9E56-4803-ACEF-50F6FC3F9235}"
 EndProject
@@ -11,6 +11,10 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Renderers", "Renderers", "{
 	EndProjectSection
 EndProject
 Project("{54435603-DBB4-11D2-8724-00A0C9A8B90C}") = "VecttyInstaller", "VecttyInstaller\VecttyInstaller.vdproj", "{C86AB378-8AF4-4843-9B0B-2C9D5D01F5D4}"
+EndProject
+Project("{F16D4249-6279-474E-8826-742E7FF7445C}") = "VecttyTest", "VecttyTest\VecttyTest.z80cdproj", "{3DB935B1-DCE1-43B9-AC34-B4BAD96D2924}"
+EndProject
+Project("{F16D4249-6279-474E-8826-742E7FF7445C}") = "VecttySupport", "VecttySupport\VecttySupport.z80cdproj", "{8E0D4C2F-889F-405F-B5BB-F860C3E73415}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

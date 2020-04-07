@@ -1,0 +1,121 @@
+﻿; Put your Z80 assembly code into code files
+Start:
+    .model Spectrum48
+	.org #EA00
+
+X_FLOOD: .defb 0
+Y_FLOOD: .defb 0
+
+;----------------------------------- Flood Fill
+
+ld a, (X_FLOOD)
+ld d, a
+ld a, (Y_FLOOD)
+ld e, a
+
+; scanline fill by John Metcalf
+; call with d=x-coord, e=y-coord
+
+; set end marker
+
+fill:
+  ld l,255
+  push hl
+
+; calculate bit position of pixel
+
+nextrun:
+  ld a,d
+  and 7
+  inc a
+  ld b,a
+  ld a,1
+bitpos:
+  rrca
+  djnz bitpos
+  ld c,b
+  ld b,a
+
+; move left until hitting a set pixel or the screen edge
+
+seekleft:
+  ld a,d
+  or a
+  jr z,goright
+  dec d
+  rlc b
+  call scrpos
+  jr nz,seekleft
+
+; move right until hitting a set pixel or the screen edge,
+; setting pixels as we go. Check rows above and below and
+; save their coordinates to fill later if necessary
+
+seekright:  
+  rrc b
+  inc d
+  jr z,rightedge
+goright:
+  call scrpos
+  jr z,rightedge
+  ld (hl),a
+  inc e
+  call checkadj
+  dec e
+  dec e
+  call checkadj
+  inc e
+  jr seekright
+
+; check to see if there's another row waiting to be filled
+
+rightedge:
+  pop de
+  ld a,e
+  inc a
+  jr nz,nextrun
+  ret  
+
+; calculate the pixel address and whether or not it's set
+
+scrpos:
+  ld a,e
+  and 248
+  rra
+  scf
+  rra
+  rra
+  ld l,a
+  xor e
+  and 248
+  xor e
+  ld h,a
+  ld a,l
+  xor d
+  and 7
+  xor d
+  rrca
+  rrca
+  rrca
+  ld l,a
+  ld a,b
+  or (hl)
+  cp (hl)
+  ret
+
+; check and save the coordinates of an adjacent row
+
+checkadj:
+  sla c
+  ld a,e
+  cp 192
+  ret nc
+  call scrpos+1
+  ret z
+  inc c
+  bit 2,c
+  ret nz
+  pop hl
+  push de
+  jp (hl)
+

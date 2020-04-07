@@ -313,10 +313,11 @@ namespace Vectty
                 if (dlg.ShowDialog() != DialogResult.OK)
                     return;
 
-                if (drawArea.ExportFile(dlg.FileName, dlg.Mode))
-                    MessageBox.Show("Export", "File exported");
+                string err = "";
+                if (drawArea.ExportFile(dlg.FileName, dlg.Mode, out err))
+                    MessageBox.Show("File exported", "Export");
                 else
-                    MessageBox.Show("Export", "Error exporting file");
+                    MessageBox.Show(err, "Export");
             }
         }
 

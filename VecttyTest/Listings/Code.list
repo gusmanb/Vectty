@@ -1,0 +1,103 @@
+
+; File #0: C:\Users\geniw\source\repos\Vectty\VecttyTest\Z80CodeFiles\Code.z80asm
+
+8000             0 1 ; Put your Z80 assembly code into code files
+8000             0 2 Start:
+8000             0 4 .org #EA00
+EA00 00          0 6 X: .defb 0
+EA01 00          0 7 Y: .defb 0
+EA02 3A 00 EA    0 10 ld a, (X)
+EA05 57          0 11 ld d, a
+EA06 3A 01 EA    0 12 ld a, (Y)
+EA09 5F          0 13 ld e, a
+EA0A             0 15 ; scanline fill by John Metcalf
+EA0A             0 16 ; call with d=x-coord, e=y-coord
+EA0A             0 18 ; set end marker
+EA0A             0 20 fill:
+EA0A 2E FF       0 21 ld l,255
+EA0C E5          0 22 push hl
+EA0D             0 24 ; calculate bit position of pixel
+EA0D             0 26 nextrun:
+EA0D 7A          0 27 ld a,d
+EA0E E6 07       0 28 and 7
+EA10 3C          0 29 inc a
+EA11 47          0 30 ld b,a
+EA12 3E 01       0 31 ld a,1
+EA14             0 32 bitpos:
+EA14 0F          0 33 rrca
+EA15 10 FD       0 34 djnz bitpos
+EA17 48          0 35 ld c,b
+EA18 47          0 36 ld b,a
+EA19             0 38 ; move left until hitting a set pixel or the screen edge
+EA19             0 40 seekleft:
+EA19 7A          0 41 ld a,d
+EA1A B7          0 42 or a
+EA1B 28 0D       0 43 jr z,goright
+EA1D 15          0 44 dec d
+EA1E CB 00       0 45 rlc b
+EA20 CD 42 EA    0 46 call scrpos
+EA23 20 F4       0 47 jr nz,seekleft
+EA25             0 49 ; move right until hitting a set pixel or the screen edge,
+EA25             0 50 ; setting pixels as we go. Check rows above and below and
+EA25             0 51 ; save their coordinates to fill later if necessary
+EA25             0 53 seekright:
+EA25 CB 08       0 54 rrc b
+EA27 14          0 55 inc d
+EA28 28 12       0 56 jr z,rightedge
+EA2A             0 57 goright:
+EA2A CD 42 EA    0 58 call scrpos
+EA2D 28 0D       0 59 jr z,rightedge
+EA2F 77          0 60 ld (hl),a
+EA30 1C          0 61 inc e
+EA31 CD 5C EA    0 62 call checkadj
+EA34 1D          0 63 dec e
+EA35 1D          0 64 dec e
+EA36 CD 5C EA    0 65 call checkadj
+EA39 1C          0 66 inc e
+EA3A 18 E9       0 67 jr seekright
+EA3C             0 69 ; check to see if there's another row waiting to be filled
+EA3C             0 71 rightedge:
+EA3C D1          0 72 pop de
+EA3D 7B          0 73 ld a,e
+EA3E 3C          0 74 inc a
+EA3F 20 CC       0 75 jr nz,nextrun
+EA41 C9          0 76 ret
+EA42             0 78 ; calculate the pixel address and whether or not it's set
+EA42             0 80 scrpos:
+EA42 7B          0 81 ld a,e
+EA43 E6 F8       0 82 and 248
+EA45 1F          0 83 rra
+EA46 37          0 84 scf
+EA47 1F          0 85 rra
+EA48 1F          0 86 rra
+EA49 6F          0 87 ld l,a
+EA4A AB          0 88 xor e
+EA4B E6 F8       0 89 and 248
+EA4D AB          0 90 xor e
+EA4E 67          0 91 ld h,a
+EA4F 7D          0 92 ld a,l
+EA50 AA          0 93 xor d
+EA51 E6 07       0 94 and 7
+EA53 AA          0 95 xor d
+EA54 0F          0 96 rrca
+EA55 0F          0 97 rrca
+EA56 0F          0 98 rrca
+EA57 6F          0 99 ld l,a
+EA58 78          0 100 ld a,b
+EA59 B6          0 101 or (hl)
+EA5A BE          0 102 cp (hl)
+EA5B C9          0 103 ret
+EA5C             0 105 ; check and save the coordinates of an adjacent row
+EA5C             0 107 checkadj:
+EA5C CB 21       0 108 sla c
+EA5E 7B          0 109 ld a,e
+EA5F FE C0       0 110 cp 192
+EA61 D0          0 111 ret nc
+EA62 CD 43 EA    0 112 call scrpos+1
+EA65 C8          0 113 ret z
+EA66 0C          0 114 inc c
+EA67 CB 51       0 115 bit 2,c
+EA69 C0          0 116 ret nz
+EA6A E1          0 117 pop hl
+EA6B D5          0 118 push de
+EA6C E9          0 119 jp (hl)
