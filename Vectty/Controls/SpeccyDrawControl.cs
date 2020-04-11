@@ -19,6 +19,7 @@ namespace Vectty
         public event EventHandler ActionsChanged;
         public event EventHandler HistoryChanged;
         public event EventHandler PolyToolChanged;
+        public event EventHandler GrabFinished;
         public ZXAttribute ActiveAttribute { get; private set; } = new ZXAttribute();
         public SpeccyDrawControlTool Tool { get; set; }
         public SpeccyDrawControlMode Mode { get; set; }
@@ -98,6 +99,12 @@ namespace Vectty
         List<SCState> redo = new List<SCState>();
 
         bool toolEnabled = false;
+
+        int grabIndex;
+        int grabCount;
+        Rectangle grabBounds;
+
+        SpeccyDrawControlTool preGrabTool;
 
         public SpeccyDrawControl()
         {
@@ -598,12 +605,12 @@ namespace Vectty
 
                             break;
 
-                        case SpeccyDrawControlTool.BlockEraser:
+                        //case SpeccyDrawControlTool.BlockEraser:
 
-                            cpActions.Add((byte)(currentAction.StartPoint.Y));
-                            cpActions.Add((byte)currentAction.StartPoint.X);
+                        //    cpActions.Add((byte)(currentAction.StartPoint.Y));
+                        //    cpActions.Add((byte)currentAction.StartPoint.X);
 
-                            break;
+                        //    break;
                     }
                 }
 
@@ -848,6 +855,22 @@ namespace Vectty
             return true;
         }
 
+        public bool BeginGrab(int Index, int Count)
+        {
+            grabIndex = Index;
+            grabCount = Count;
+            var range = actions.GetRange(Index, Count);
+            grabBounds = ComputeBoundingBox(range);
+
+            if (grabBounds == Rectangle.Empty)
+                return false;
+
+            preGrabTool = Tool;
+            Tool = SpeccyDrawControlTool.Grab;
+
+            return true;
+        }
+
         public bool VMirrorOperation(int Index, int Count, bool Absolute)
         {
             if (Index > actions.Count - 1)
@@ -965,6 +988,7 @@ namespace Vectty
                             rect = Rectangle.Union(rect, lastOpArea);
 
                         break;
+
                 }
             }
 
@@ -1079,11 +1103,11 @@ namespace Vectty
                         DrawRect(op.StartPoint.X, op.StartPoint.Y, op.EndPoint.X, op.EndPoint.Y, Bmp, false);
                         break;
 
-                    case SpeccyDrawControlTool.BlockEraser:
+                    //case SpeccyDrawControlTool.BlockEraser:
 
-                        var chrD = GetCharAt(op.StartPoint.X, op.StartPoint.Y);
-                        DeletePixels(chrD);
-                        break;
+                    //    var chrD = GetCharAt(op.StartPoint.X, op.StartPoint.Y);
+                    //    DeletePixels(chrD);
+                    //    break;
 
                     case SpeccyDrawControlTool.Fill:
 
@@ -1190,10 +1214,7 @@ namespace Vectty
                 lastOpArea.Inflate(2 * scale, 2 * scale);
             }
             else
-            {
                 lastOpArea = new Rectangle(xMin, yMin, (xMax - xMin), (yMax - yMin));
-                lastOpArea.Inflate(2, 2);
-            }
 
             return true;
         }
@@ -1249,11 +1270,8 @@ namespace Vectty
                 lastOpArea.Inflate(2 * scale, 2 * scale);
             }
             else
-            {
                 lastOpArea = new Rectangle(xMin, yMin, (xMax - xMin), (yMax - yMin));
-                lastOpArea.Inflate(2, 2);
-            }
-
+               
             return true;
         }
         private bool DrawRect(int rx0, int ry0, int rx1, int ry1, Bitmap bmp, bool UpdateAttributes = true)
@@ -1355,10 +1373,7 @@ namespace Vectty
                 lastOpArea.Inflate(2 * scale, 2 * scale);
             }
             else
-            {
                 lastOpArea = new Rectangle(xMin, yMin, (xMax - xMin), (yMax - yMin));
-                lastOpArea.Inflate(2, 2);
-            }
 
             return true;
         }
@@ -1456,10 +1471,7 @@ namespace Vectty
                 lastOpArea.Inflate(2 * scale, 2 * scale);
             }
             else
-            {
                 lastOpArea = new Rectangle(xMin, yMin, (xMax - xMin), (yMax - yMin));
-                lastOpArea.Inflate(2, 2);
-            }
 
             return true;
         }
@@ -1742,23 +1754,24 @@ namespace Vectty
 
                     break;
 
-                case SpeccyDrawControlTool.BlockEraser:
+                //case SpeccyDrawControlTool.BlockEraser:
 
-                    var chrD = GetCharAt(startPoint.X, startPoint.Y);
+                //    var chrD = GetCharAt(startPoint.X, startPoint.Y);
 
-                    if (DeletePixels(chrD))
-                    {
-                        actions.Add(new SCAction { Tool = SpeccyDrawControlTool.BlockEraser, StartPoint = new Point(chrD.X, chrD.Y) });
-                        Invalidate(chrD.DoubleArea(scale));
-                        if (ActionsChanged != null)
-                            ActionsChanged(this, EventArgs.Empty);
-                    }
+                //    if (DeletePixels(chrD))
+                //    {
+                //        actions.Add(new SCAction { Tool = SpeccyDrawControlTool.BlockEraser, StartPoint = new Point(chrD.X, chrD.Y) });
+                //        Invalidate(chrD.DoubleArea(scale));
+                //        if (ActionsChanged != null)
+                //            ActionsChanged(this, EventArgs.Empty);
+                //    }
 
-                    break;
+                //    break;
 
                 case SpeccyDrawControlTool.Line:
+                case SpeccyDrawControlTool.Grab:
 
-                    if (actions.Count > 0 && actions.Last().EndPoint == startPoint)
+                    if (Tool != SpeccyDrawControlTool.Grab && actions.Count > 0 && actions.Last().EndPoint == startPoint)
                     {
                         PolyTool = true;
 
@@ -1823,6 +1836,25 @@ namespace Vectty
                         if (PolyToolChanged != null)
                             PolyToolChanged(this, EventArgs.Empty);
                     }
+
+                    break;
+
+                case SpeccyDrawControlTool.Grab:
+
+                    int xOffset = endPoint.X - startPoint.X;
+                    int yOffset = endPoint.Y - startPoint.Y;
+
+                    Rectangle offsetRect = new Rectangle(grabBounds.X + xOffset,
+                        grabBounds.Y + yOffset,
+                        grabBounds.Width, grabBounds.Height);
+
+                    if (offsetRect.X >= 0 && offsetRect.Y >= 0 && offsetRect.Right < 256 && offsetRect.Bottom < 192)
+                        ApplyGrab(xOffset, yOffset);
+
+                    Tool = preGrabTool;
+
+                    if (GrabFinished != null)
+                        GrabFinished(this, EventArgs.Empty);
 
                     break;
 
@@ -1893,6 +1925,38 @@ namespace Vectty
 
             }
         }
+
+        private void ApplyGrab(int xOffset, int yOffset)
+        {
+            var ops = actions.GetRange(grabIndex, grabCount);
+
+            foreach (var op in ops)
+            {
+                var st = op.StartPoint;
+                var ep = op.EndPoint;
+
+                st.Offset(xOffset, yOffset);
+                ep.Offset(xOffset, yOffset);
+
+                op.StartPoint = st;
+                op.EndPoint = ep;
+            }
+
+            if (pixels != null)
+                pixels.Dispose();
+
+            pixels = new Bitmap(256, 192, PixelFormat.Format32bppArgb);
+
+            RepeatActions(actions, pixels);
+
+            drawBox.Image = pixels;
+            drawBox.Invalidate();
+
+            if (ActionsChanged != null)
+                ActionsChanged(this, EventArgs.Empty);
+
+        }
+
         private void drawBox_MouseMove(object sender, MouseEventArgs e)
         {
             if (!toolEnabled)
@@ -1939,25 +2003,42 @@ namespace Vectty
 
                     break;
 
-                case SpeccyDrawControlTool.BlockEraser:
+                //case SpeccyDrawControlTool.BlockEraser:
 
-                    var chrD = GetCharAt(midPoint.X, midPoint.Y);
+                //    var chrD = GetCharAt(midPoint.X, midPoint.Y);
 
-                    if (DeletePixels(chrD))
-                    {
-                        actions.Add(new SCAction { Tool = SpeccyDrawControlTool.BlockEraser, StartPoint = new Point(chrD.X, chrD.Y) });
-                        Invalidate(chrD.DoubleArea(scale));
-                        if (ActionsChanged != null)
-                            ActionsChanged(this, EventArgs.Empty);
-                    }
+                //    if (DeletePixels(chrD))
+                //    {
+                //        actions.Add(new SCAction { Tool = SpeccyDrawControlTool.BlockEraser, StartPoint = new Point(chrD.X, chrD.Y) });
+                //        Invalidate(chrD.DoubleArea(scale));
+                //        if (ActionsChanged != null)
+                //            ActionsChanged(this, EventArgs.Empty);
+                //    }
 
-                    break;
+                //    break;
 
                 case SpeccyDrawControlTool.Line:
 
                     ClearGraphics(tempBox.Image);
                     Invalidate(lastOpArea);
                     DrawLine(startPoint.X, startPoint.Y, midPoint.X, midPoint.Y, tempBox.Image as Bitmap, false);
+                    Invalidate(lastOpArea);
+
+                    break;
+
+                case SpeccyDrawControlTool.Grab:
+
+                    ClearGraphics(tempBox.Image);
+                    Invalidate(lastOpArea);
+
+                    Rectangle offsetRect = new Rectangle(grabBounds.X + (midPoint.X - startPoint.X),
+                        grabBounds.Y + (midPoint.Y - startPoint.Y),
+                        grabBounds.Width, grabBounds.Height);
+
+                    if(offsetRect.X >= 0 && offsetRect.Y >= 0 && offsetRect.Right < 256 && offsetRect.Bottom < 192)
+                        DrawLine(startPoint.X, startPoint.Y, midPoint.X, midPoint.Y, tempBox.Image as Bitmap, false);
+
+                    
                     Invalidate(lastOpArea);
 
                     break;
@@ -2163,8 +2244,9 @@ namespace Vectty
         Circle,
         Arc,
         Fill,
-        BlockEraser,
-        Brush
+        //BlockEraser,
+        Brush,
+        Grab
     }
 
     public enum SpeccyDrawControlMode

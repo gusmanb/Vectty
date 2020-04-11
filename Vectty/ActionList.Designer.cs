@@ -32,6 +32,7 @@
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(ActionList));
             this.toolStripContainer1 = new System.Windows.Forms.ToolStripContainer();
             this.toolStrip1 = new System.Windows.Forms.ToolStrip();
+            this.toolStrip2 = new System.Windows.Forms.ToolStrip();
             this.lstActions = new System.Windows.Forms.ListView();
             this.columnHeader1 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.imlActionTypes = new System.Windows.Forms.ImageList(this.components);
@@ -50,7 +51,6 @@
             this.label3 = new System.Windows.Forms.Label();
             this.lblAction = new System.Windows.Forms.Label();
             this.label1 = new System.Windows.Forms.Label();
-            this.toolStrip2 = new System.Windows.Forms.ToolStrip();
             this.btCopy = new System.Windows.Forms.ToolStripButton();
             this.btPaste = new System.Windows.Forms.ToolStripButton();
             this.btDelete = new System.Windows.Forms.ToolStripButton();
@@ -60,14 +60,15 @@
             this.btVMirror = new System.Windows.Forms.ToolStripButton();
             this.btAHMirror = new System.Windows.Forms.ToolStripButton();
             this.btAVMirror = new System.Windows.Forms.ToolStripButton();
+            this.btGrab = new System.Windows.Forms.ToolStripButton();
             this.toolStripContainer1.BottomToolStripPanel.SuspendLayout();
             this.toolStripContainer1.ContentPanel.SuspendLayout();
             this.toolStripContainer1.SuspendLayout();
             this.toolStrip1.SuspendLayout();
+            this.toolStrip2.SuspendLayout();
             this.panel1.SuspendLayout();
             this.groupBox2.SuspendLayout();
             this.groupBox1.SuspendLayout();
-            this.toolStrip2.SuspendLayout();
             this.SuspendLayout();
             // 
             // toolStripContainer1
@@ -82,13 +83,13 @@
             // 
             this.toolStripContainer1.ContentPanel.Controls.Add(this.lstActions);
             this.toolStripContainer1.ContentPanel.Controls.Add(this.panel1);
-            this.toolStripContainer1.ContentPanel.Size = new System.Drawing.Size(120, 437);
+            this.toolStripContainer1.ContentPanel.Size = new System.Drawing.Size(130, 324);
             this.toolStripContainer1.Dock = System.Windows.Forms.DockStyle.Fill;
             this.toolStripContainer1.LeftToolStripPanelVisible = false;
             this.toolStripContainer1.Location = new System.Drawing.Point(0, 0);
             this.toolStripContainer1.Name = "toolStripContainer1";
             this.toolStripContainer1.RightToolStripPanelVisible = false;
-            this.toolStripContainer1.Size = new System.Drawing.Size(120, 512);
+            this.toolStripContainer1.Size = new System.Drawing.Size(130, 374);
             this.toolStripContainer1.TabIndex = 0;
             this.toolStripContainer1.Text = "toolStripContainer1";
             // 
@@ -109,8 +110,25 @@
             this.toolStrip1.Location = new System.Drawing.Point(3, 0);
             this.toolStrip1.Name = "toolStrip1";
             this.toolStrip1.RenderMode = System.Windows.Forms.ToolStripRenderMode.Professional;
-            this.toolStrip1.Size = new System.Drawing.Size(116, 25);
+            this.toolStrip1.Size = new System.Drawing.Size(127, 25);
             this.toolStrip1.TabIndex = 0;
+            // 
+            // toolStrip2
+            // 
+            this.toolStrip2.AutoSize = false;
+            this.toolStrip2.Dock = System.Windows.Forms.DockStyle.None;
+            this.toolStrip2.GripStyle = System.Windows.Forms.ToolStripGripStyle.Hidden;
+            this.toolStrip2.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.btHMirror,
+            this.btVMirror,
+            this.btAHMirror,
+            this.btAVMirror,
+            this.btGrab});
+            this.toolStrip2.Location = new System.Drawing.Point(3, 25);
+            this.toolStrip2.Name = "toolStrip2";
+            this.toolStrip2.Size = new System.Drawing.Size(127, 25);
+            this.toolStrip2.TabIndex = 2;
+            this.toolStrip2.Text = "toolStrip2";
             // 
             // lstActions
             // 
@@ -123,7 +141,7 @@
             this.lstActions.LargeImageList = this.imlActionTypes;
             this.lstActions.Location = new System.Drawing.Point(0, 0);
             this.lstActions.Name = "lstActions";
-            this.lstActions.Size = new System.Drawing.Size(120, 280);
+            this.lstActions.Size = new System.Drawing.Size(130, 167);
             this.lstActions.SmallImageList = this.imlActionTypes;
             this.lstActions.TabIndex = 0;
             this.lstActions.UseCompatibleStateImageBehavior = false;
@@ -155,9 +173,9 @@
             this.panel1.Controls.Add(this.lblAction);
             this.panel1.Controls.Add(this.label1);
             this.panel1.Dock = System.Windows.Forms.DockStyle.Bottom;
-            this.panel1.Location = new System.Drawing.Point(0, 280);
+            this.panel1.Location = new System.Drawing.Point(0, 167);
             this.panel1.Name = "panel1";
-            this.panel1.Size = new System.Drawing.Size(120, 157);
+            this.panel1.Size = new System.Drawing.Size(130, 157);
             this.panel1.TabIndex = 1;
             // 
             // lblDegRad
@@ -186,7 +204,7 @@
             this.groupBox2.Controls.Add(this.label10);
             this.groupBox2.Location = new System.Drawing.Point(5, 79);
             this.groupBox2.Name = "groupBox2";
-            this.groupBox2.Size = new System.Drawing.Size(116, 54);
+            this.groupBox2.Size = new System.Drawing.Size(122, 54);
             this.groupBox2.TabIndex = 4;
             this.groupBox2.TabStop = false;
             this.groupBox2.Text = "End coords.";
@@ -235,7 +253,7 @@
             this.groupBox1.Controls.Add(this.label3);
             this.groupBox1.Location = new System.Drawing.Point(5, 19);
             this.groupBox1.Name = "groupBox1";
-            this.groupBox1.Size = new System.Drawing.Size(116, 54);
+            this.groupBox1.Size = new System.Drawing.Size(122, 54);
             this.groupBox1.TabIndex = 2;
             this.groupBox1.TabStop = false;
             this.groupBox1.Text = "Start coords.";
@@ -293,22 +311,6 @@
             this.label1.Size = new System.Drawing.Size(40, 13);
             this.label1.TabIndex = 0;
             this.label1.Text = "Action:";
-            // 
-            // toolStrip2
-            // 
-            this.toolStrip2.AutoSize = false;
-            this.toolStrip2.Dock = System.Windows.Forms.DockStyle.None;
-            this.toolStrip2.GripStyle = System.Windows.Forms.ToolStripGripStyle.Hidden;
-            this.toolStrip2.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.btHMirror,
-            this.btVMirror,
-            this.btAHMirror,
-            this.btAVMirror});
-            this.toolStrip2.Location = new System.Drawing.Point(3, 25);
-            this.toolStrip2.Name = "toolStrip2";
-            this.toolStrip2.Size = new System.Drawing.Size(116, 25);
-            this.toolStrip2.TabIndex = 2;
-            this.toolStrip2.Text = "toolStrip2";
             // 
             // btCopy
             // 
@@ -400,16 +402,27 @@
             this.btAVMirror.Text = "Absolute vertical mirror";
             this.btAVMirror.Click += new System.EventHandler(this.btAVMirror_Click);
             // 
+            // btGrab
+            // 
+            this.btGrab.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            this.btGrab.Image = global::Vectty.Properties.Resources.Grab;
+            this.btGrab.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.btGrab.Name = "btGrab";
+            this.btGrab.Size = new System.Drawing.Size(23, 22);
+            this.btGrab.Text = "Grab";
+            this.btGrab.Click += new System.EventHandler(this.btGrab_Click);
+            // 
             // ActionList
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(120, 512);
+            this.ClientSize = new System.Drawing.Size(130, 374);
+            this.ControlBox = false;
             this.Controls.Add(this.toolStripContainer1);
             this.MaximizeBox = false;
-            this.MaximumSize = new System.Drawing.Size(135, 4096);
+            this.MaximumSize = new System.Drawing.Size(146, 4096);
             this.MinimizeBox = false;
-            this.MinimumSize = new System.Drawing.Size(135, 551);
+            this.MinimumSize = new System.Drawing.Size(146, 300);
             this.Name = "ActionList";
             this.Text = "Action List";
             this.toolStripContainer1.BottomToolStripPanel.ResumeLayout(false);
@@ -418,14 +431,14 @@
             this.toolStripContainer1.PerformLayout();
             this.toolStrip1.ResumeLayout(false);
             this.toolStrip1.PerformLayout();
+            this.toolStrip2.ResumeLayout(false);
+            this.toolStrip2.PerformLayout();
             this.panel1.ResumeLayout(false);
             this.panel1.PerformLayout();
             this.groupBox2.ResumeLayout(false);
             this.groupBox2.PerformLayout();
             this.groupBox1.ResumeLayout(false);
             this.groupBox1.PerformLayout();
-            this.toolStrip2.ResumeLayout(false);
-            this.toolStrip2.PerformLayout();
             this.ResumeLayout(false);
 
         }
@@ -462,5 +475,6 @@
         private System.Windows.Forms.ToolStripButton btVMirror;
         private System.Windows.Forms.ToolStripButton btAHMirror;
         private System.Windows.Forms.ToolStripButton btAVMirror;
+        private System.Windows.Forms.ToolStripButton btGrab;
     }
 }

@@ -23,6 +23,12 @@ namespace Vectty
         public event EventHandler<ActionEventArgs> AbsoulteHorizontalMirrorActions;
         public event EventHandler<ActionEventArgs> AbsoulteVerticalMirrorActions;
 
+        public event EventHandler<ActionEventArgs> GrabActions;
+
+        ActionTool lastAction;
+        int lastActionIndex;
+        int lastActionCount;
+
         public ActionList()
         {
             InitializeComponent();
@@ -42,12 +48,46 @@ namespace Vectty
                 lstActions.Items.Add(lItem);
             }
 
-            if (lItem != null)
+            if (lastAction == ActionTool.None)
             {
-                lItem.EnsureVisible();
-                lItem.Selected = true;
-            }
 
+                if (lItem != null)
+                {
+                    lItem.EnsureVisible();
+                    lItem.Selected = true;
+                }
+            }
+            else
+            {
+                switch (lastAction)
+                {
+                    case ActionTool.Up:
+
+                        for (int buc = lastActionIndex - 1; buc < lastActionIndex + lastActionCount - 1; buc++)
+                            lstActions.Items[buc].Selected = true;
+
+                        break;
+
+                    case ActionTool.Down:
+
+                        for (int buc = lastActionIndex + 1; buc < lastActionIndex + lastActionCount + 1; buc++)
+                            lstActions.Items[buc].Selected = true;
+
+                        break;
+
+                    case ActionTool.HMirror:
+                    case ActionTool.VMirror:
+                    case ActionTool.AHMirror:
+                    case ActionTool.AVMirror:
+                    case ActionTool.Grab:
+
+                        for (int buc = lastActionIndex; buc < lastActionIndex + lastActionCount; buc++)
+                            lstActions.Items[buc].Selected = true;
+
+                        break;
+                }
+                lastAction = ActionTool.None;
+            }
             lstActions.EndUpdate();
         }
 
@@ -94,6 +134,11 @@ namespace Vectty
                 if (act.Tool == SpeccyDrawControlTool.Circle)
                     lblDegRad.Text = ((int)act.StartPoint.Distance(act.EndPoint)).ToString();
 
+            }
+            else if (lstActions.SelectedItems.Count == 0)
+            {
+                foreach (var item in lstActions.SelectedItems.Cast<ListViewItem>())
+                    item.Selected = false;
             }
             else if (lstActions.SelectedItems.Count > 1)
             {
@@ -144,6 +189,9 @@ namespace Vectty
 
                 int first = query.First();
 
+                lastAction = ActionTool.Delete;
+                lastActionIndex = first;
+                lastActionCount = lstActions.SelectedItems.Count;
                 DeleteActions(this, new ActionEventArgs { Index = first, Count = lstActions.SelectedItems.Count });
             }
         }
@@ -159,6 +207,9 @@ namespace Vectty
 
                 int first = query.First();
 
+                lastAction = ActionTool.Up;
+                lastActionIndex = first;
+                lastActionCount = lstActions.SelectedItems.Count;
                 ShiftUpActions(this, new ActionEventArgs { Index = first, Count = lstActions.SelectedItems.Count });
             }
         }
@@ -174,6 +225,9 @@ namespace Vectty
 
                 int first = query.First();
 
+                lastAction = ActionTool.Down;
+                lastActionIndex = first;
+                lastActionCount = lstActions.SelectedItems.Count;
                 ShiftDownActions(this, new ActionEventArgs { Index = first, Count = lstActions.SelectedItems.Count });
             }
         }
@@ -189,6 +243,9 @@ namespace Vectty
 
                 int first = query.First();
 
+                lastAction = ActionTool.HMirror;
+                lastActionIndex = first;
+                lastActionCount = lstActions.SelectedItems.Count;
                 HorizontalMirrorActions(this, new ActionEventArgs { Index = first, Count = lstActions.SelectedItems.Count });
             }
         }
@@ -204,6 +261,9 @@ namespace Vectty
 
                 int first = query.First();
 
+                lastAction = ActionTool.VMirror;
+                lastActionIndex = first;
+                lastActionCount = lstActions.SelectedItems.Count;
                 VerticalMirrorActions(this, new ActionEventArgs { Index = first, Count = lstActions.SelectedItems.Count });
             }
         }
@@ -219,6 +279,9 @@ namespace Vectty
 
                 int first = query.First();
 
+                lastAction = ActionTool.AHMirror;
+                lastActionIndex = first;
+                lastActionCount = lstActions.SelectedItems.Count;
                 AbsoulteHorizontalMirrorActions(this, new ActionEventArgs { Index = first, Count = lstActions.SelectedItems.Count });
             }
         }
@@ -234,8 +297,42 @@ namespace Vectty
 
                 int first = query.First();
 
+                lastAction = ActionTool.AVMirror;
+                lastActionIndex = first;
+                lastActionCount = lstActions.SelectedItems.Count;
                 AbsoulteVerticalMirrorActions(this, new ActionEventArgs { Index = first, Count = lstActions.SelectedItems.Count });
             }
+        }
+
+        private void btGrab_Click(object sender, EventArgs e)
+        {
+            if (GrabActions != null && lstActions.SelectedItems.Count > 0)
+            {
+                var query = from item in lstActions.SelectedItems.Cast<ListViewItem>()
+                            let idx = lstActions.Items.IndexOf(item)
+                            orderby idx
+                            select idx;
+
+                int first = query.First();
+
+                lastAction = ActionTool.Grab;
+                lastActionIndex = first;
+                lastActionCount = lstActions.SelectedItems.Count;
+                GrabActions(this, new ActionEventArgs { Index = first, Count = lstActions.SelectedItems.Count });
+            }
+        }
+
+        enum ActionTool
+        { 
+            None, 
+            Up,
+            Down,
+            Delete,
+            HMirror,
+            VMirror,
+            AHMirror,
+            AVMirror,
+            Grab
         }
     }
 

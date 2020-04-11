@@ -283,6 +283,16 @@ namespace Vectty.Properties {
         /// <summary>
         ///   Busca un recurso adaptado de tipo System.Drawing.Bitmap.
         /// </summary>
+        internal static System.Drawing.Bitmap Grab {
+            get {
+                object obj = ResourceManager.GetObject("Grab", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Busca un recurso adaptado de tipo System.Drawing.Bitmap.
+        /// </summary>
         internal static System.Drawing.Bitmap Grid {
             get {
                 object obj = ResourceManager.GetObject("Grid", resourceCulture);
@@ -376,6 +386,16 @@ namespace Vectty.Properties {
         internal static System.Drawing.Bitmap Paste {
             get {
                 object obj = ResourceManager.GetObject("Paste", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Busca un recurso adaptado de tipo System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap Pen {
+            get {
+                object obj = ResourceManager.GetObject("Pen", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }

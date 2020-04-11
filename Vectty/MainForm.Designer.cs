@@ -72,7 +72,6 @@
             this.btnCircle = new System.Windows.Forms.ToolStripButton();
             this.btnArc = new System.Windows.Forms.ToolStripButton();
             this.btnFill = new System.Windows.Forms.ToolStripButton();
-            this.btnErase = new System.Windows.Forms.ToolStripButton();
             this.btnBrush = new System.Windows.Forms.ToolStripButton();
             this.toolStripSeparator5 = new System.Windows.Forms.ToolStripSeparator();
             this.btnBitmap = new System.Windows.Forms.ToolStripButton();
@@ -83,13 +82,6 @@
             this.btnSetPaper = new System.Windows.Forms.ToolStripButton();
             this.btnSetInk = new System.Windows.Forms.ToolStripButton();
             this.toolStripSeparator4 = new System.Windows.Forms.ToolStripSeparator();
-            this.toolStrip1 = new System.Windows.Forms.ToolStrip();
-            this.toolStripLabel3 = new System.Windows.Forms.ToolStripLabel();
-            this.cbScale = new System.Windows.Forms.ToolStripComboBox();
-            this.btnBG = new System.Windows.Forms.ToolStripButton();
-            this.btnGrid = new System.Windows.Forms.ToolStripButton();
-            this.cbBGMode = new System.Windows.Forms.ToolStripComboBox();
-            this.tbAlpha = new Vectty.Controls.ToolStripTrackBar();
             this.strpFile = new System.Windows.Forms.ToolStrip();
             this.btnNew = new System.Windows.Forms.ToolStripButton();
             this.btnOpen = new System.Windows.Forms.ToolStripButton();
@@ -98,6 +90,14 @@
             this.strpActions = new System.Windows.Forms.ToolStrip();
             this.btnUndo = new System.Windows.Forms.ToolStripButton();
             this.btnRedo = new System.Windows.Forms.ToolStripButton();
+            this.toolStrip1 = new System.Windows.Forms.ToolStrip();
+            this.toolStripLabel3 = new System.Windows.Forms.ToolStripLabel();
+            this.cbScale = new System.Windows.Forms.ToolStripComboBox();
+            this.btnBG = new System.Windows.Forms.ToolStripButton();
+            this.btnGrid = new System.Windows.Forms.ToolStripButton();
+            this.cbBGMode = new System.Windows.Forms.ToolStripComboBox();
+            this.tbAlpha = new Vectty.Controls.ToolStripTrackBar();
+            this.btnErase = new System.Windows.Forms.ToolStripButton();
             this.toolStripContainer1.ContentPanel.SuspendLayout();
             this.toolStripContainer1.LeftToolStripPanel.SuspendLayout();
             this.toolStripContainer1.RightToolStripPanel.SuspendLayout();
@@ -106,9 +106,9 @@
             this.panel1.SuspendLayout();
             this.strpColors.SuspendLayout();
             this.strpTools.SuspendLayout();
-            this.toolStrip1.SuspendLayout();
             this.strpFile.SuspendLayout();
             this.strpActions.SuspendLayout();
+            this.toolStrip1.SuspendLayout();
             this.SuspendLayout();
             // 
             // toolStripContainer1
@@ -120,7 +120,7 @@
             this.toolStripContainer1.ContentPanel.BackColor = System.Drawing.SystemColors.ControlDarkDark;
             this.toolStripContainer1.ContentPanel.Controls.Add(this.windowPanel);
             this.toolStripContainer1.ContentPanel.Controls.Add(this.panel1);
-            this.toolStripContainer1.ContentPanel.Size = new System.Drawing.Size(677, 581);
+            this.toolStripContainer1.ContentPanel.Size = new System.Drawing.Size(935, 581);
             this.toolStripContainer1.Dock = System.Windows.Forms.DockStyle.Fill;
             // 
             // toolStripContainer1.LeftToolStripPanel
@@ -134,7 +134,7 @@
             // 
             this.toolStripContainer1.RightToolStripPanel.BackColor = System.Drawing.SystemColors.Control;
             this.toolStripContainer1.RightToolStripPanel.Controls.Add(this.strpTools);
-            this.toolStripContainer1.Size = new System.Drawing.Size(739, 606);
+            this.toolStripContainer1.Size = new System.Drawing.Size(997, 606);
             this.toolStripContainer1.TabIndex = 0;
             this.toolStripContainer1.Text = "toolStripContainer1";
             // 
@@ -151,7 +151,7 @@
             this.windowPanel.Dock = System.Windows.Forms.DockStyle.Fill;
             this.windowPanel.Location = new System.Drawing.Point(0, 0);
             this.windowPanel.Name = "windowPanel";
-            this.windowPanel.Size = new System.Drawing.Size(677, 555);
+            this.windowPanel.Size = new System.Drawing.Size(935, 555);
             this.windowPanel.TabIndex = 2;
             // 
             // panel1
@@ -172,7 +172,7 @@
             this.panel1.Dock = System.Windows.Forms.DockStyle.Bottom;
             this.panel1.Location = new System.Drawing.Point(0, 555);
             this.panel1.Name = "panel1";
-            this.panel1.Size = new System.Drawing.Size(677, 26);
+            this.panel1.Size = new System.Drawing.Size(935, 26);
             this.panel1.TabIndex = 1;
             // 
             // label6
@@ -549,7 +549,6 @@
             this.btnCircle,
             this.btnArc,
             this.btnFill,
-            this.btnErase,
             this.btnBrush,
             this.toolStripSeparator5,
             this.btnBitmap,
@@ -562,7 +561,7 @@
             this.toolStripSeparator4});
             this.strpTools.Location = new System.Drawing.Point(0, 3);
             this.strpTools.Name = "strpTools";
-            this.strpTools.Size = new System.Drawing.Size(24, 328);
+            this.strpTools.Size = new System.Drawing.Size(24, 305);
             this.strpTools.TabIndex = 0;
             // 
             // btnLine
@@ -602,7 +601,7 @@
             this.btnArc.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.btnArc.Name = "btnArc";
             this.btnArc.Size = new System.Drawing.Size(22, 20);
-            this.btnArc.Text = "toolStripButton1";
+            this.btnArc.Text = "Arc tool";
             this.btnArc.Click += new System.EventHandler(this.btnArc_Click);
             // 
             // btnFill
@@ -614,16 +613,6 @@
             this.btnFill.Size = new System.Drawing.Size(22, 20);
             this.btnFill.Text = "Fill tool";
             this.btnFill.Click += new System.EventHandler(this.btnFill_Click);
-            // 
-            // btnErase
-            // 
-            this.btnErase.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-            this.btnErase.Image = global::Vectty.Properties.Resources.Eraser;
-            this.btnErase.ImageTransparentColor = System.Drawing.Color.Magenta;
-            this.btnErase.Name = "btnErase";
-            this.btnErase.Size = new System.Drawing.Size(22, 20);
-            this.btnErase.Text = "Block eraser tool";
-            this.btnErase.Click += new System.EventHandler(this.btnErase_Click);
             // 
             // btnBrush
             // 
@@ -709,79 +698,6 @@
             // 
             this.toolStripSeparator4.Name = "toolStripSeparator4";
             this.toolStripSeparator4.Size = new System.Drawing.Size(22, 6);
-            // 
-            // toolStrip1
-            // 
-            this.toolStrip1.Dock = System.Windows.Forms.DockStyle.None;
-            this.toolStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.toolStripLabel3,
-            this.cbScale,
-            this.btnBG,
-            this.btnGrid,
-            this.cbBGMode,
-            this.tbAlpha});
-            this.toolStrip1.Location = new System.Drawing.Point(170, 0);
-            this.toolStrip1.Name = "toolStrip1";
-            this.toolStrip1.Size = new System.Drawing.Size(356, 25);
-            this.toolStrip1.TabIndex = 3;
-            // 
-            // toolStripLabel3
-            // 
-            this.toolStripLabel3.Name = "toolStripLabel3";
-            this.toolStripLabel3.Size = new System.Drawing.Size(34, 22);
-            this.toolStripLabel3.Text = "Scale";
-            // 
-            // cbScale
-            // 
-            this.cbScale.AutoSize = false;
-            this.cbScale.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-            this.cbScale.Items.AddRange(new object[] {
-            "1",
-            "2",
-            "4",
-            "8"});
-            this.cbScale.Name = "cbScale";
-            this.cbScale.Size = new System.Drawing.Size(32, 23);
-            // 
-            // btnBG
-            // 
-            this.btnBG.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-            this.btnBG.Image = global::Vectty.Properties.Resources.Background;
-            this.btnBG.ImageTransparentColor = System.Drawing.Color.Magenta;
-            this.btnBG.Name = "btnBG";
-            this.btnBG.Size = new System.Drawing.Size(23, 22);
-            this.btnBG.Text = "Bacground image";
-            this.btnBG.Click += new System.EventHandler(this.btnBG_Click);
-            // 
-            // btnGrid
-            // 
-            this.btnGrid.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-            this.btnGrid.Image = global::Vectty.Properties.Resources.Grid;
-            this.btnGrid.ImageTransparentColor = System.Drawing.Color.Magenta;
-            this.btnGrid.Name = "btnGrid";
-            this.btnGrid.Size = new System.Drawing.Size(23, 22);
-            this.btnGrid.Text = "Toggle grid";
-            this.btnGrid.Click += new System.EventHandler(this.btnGrid_Click);
-            // 
-            // cbBGMode
-            // 
-            this.cbBGMode.AutoSize = false;
-            this.cbBGMode.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-            this.cbBGMode.Items.AddRange(new object[] {
-            "Disabled",
-            "Over",
-            "AlphaBlend"});
-            this.cbBGMode.Name = "cbBGMode";
-            this.cbBGMode.Size = new System.Drawing.Size(124, 23);
-            // 
-            // tbAlpha
-            // 
-            this.tbAlpha.AutoSize = false;
-            this.tbAlpha.Name = "tbAlpha";
-            this.tbAlpha.Size = new System.Drawing.Size(104, 16);
-            this.tbAlpha.Text = "Alpha value";
-            this.tbAlpha.Value = 5;
-            this.tbAlpha.ValueChanged += new System.EventHandler(this.tbAlpha_ValueChanged);
             // 
             // strpFile
             // 
@@ -869,11 +785,89 @@
             this.btnRedo.Text = "toolStripButton8";
             this.btnRedo.Click += new System.EventHandler(this.btnRedo_Click);
             // 
+            // toolStrip1
+            // 
+            this.toolStrip1.Dock = System.Windows.Forms.DockStyle.None;
+            this.toolStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.toolStripLabel3,
+            this.cbScale,
+            this.btnBG,
+            this.btnGrid,
+            this.cbBGMode,
+            this.tbAlpha});
+            this.toolStrip1.Location = new System.Drawing.Point(168, 0);
+            this.toolStrip1.Name = "toolStrip1";
+            this.toolStrip1.Size = new System.Drawing.Size(387, 25);
+            this.toolStrip1.TabIndex = 3;
+            // 
+            // toolStripLabel3
+            // 
+            this.toolStripLabel3.Name = "toolStripLabel3";
+            this.toolStripLabel3.Size = new System.Drawing.Size(34, 22);
+            this.toolStripLabel3.Text = "Scale";
+            // 
+            // cbScale
+            // 
+            this.cbScale.AutoSize = false;
+            this.cbScale.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.cbScale.Items.AddRange(new object[] {
+            "1",
+            "2",
+            "4",
+            "8"});
+            this.cbScale.Name = "cbScale";
+            this.cbScale.Size = new System.Drawing.Size(32, 23);
+            // 
+            // btnBG
+            // 
+            this.btnBG.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            this.btnBG.Image = global::Vectty.Properties.Resources.Background;
+            this.btnBG.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.btnBG.Name = "btnBG";
+            this.btnBG.Size = new System.Drawing.Size(23, 22);
+            this.btnBG.Text = "Bacground image";
+            this.btnBG.Click += new System.EventHandler(this.btnBG_Click);
+            // 
+            // btnGrid
+            // 
+            this.btnGrid.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            this.btnGrid.Image = global::Vectty.Properties.Resources.Grid;
+            this.btnGrid.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.btnGrid.Name = "btnGrid";
+            this.btnGrid.Size = new System.Drawing.Size(23, 22);
+            this.btnGrid.Text = "Toggle grid";
+            this.btnGrid.Click += new System.EventHandler(this.btnGrid_Click);
+            // 
+            // cbBGMode
+            // 
+            this.cbBGMode.AutoSize = false;
+            this.cbBGMode.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.cbBGMode.Items.AddRange(new object[] {
+            "Disabled",
+            "Over",
+            "AlphaBlend"});
+            this.cbBGMode.Name = "cbBGMode";
+            this.cbBGMode.Size = new System.Drawing.Size(124, 23);
+            // 
+            // tbAlpha
+            // 
+            this.tbAlpha.AutoSize = false;
+            this.tbAlpha.Name = "tbAlpha";
+            this.tbAlpha.Size = new System.Drawing.Size(104, 16);
+            this.tbAlpha.Text = "Alpha value";
+            this.tbAlpha.Value = 5;
+            this.tbAlpha.ValueChanged += new System.EventHandler(this.tbAlpha_ValueChanged);
+            // 
+            // btnErase
+            // 
+            this.btnErase.Name = "btnErase";
+            this.btnErase.Size = new System.Drawing.Size(23, 23);
+            // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(739, 606);
+            this.ClientSize = new System.Drawing.Size(997, 606);
             this.Controls.Add(this.toolStripContainer1);
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Name = "MainForm";
@@ -895,12 +889,12 @@
             this.strpColors.PerformLayout();
             this.strpTools.ResumeLayout(false);
             this.strpTools.PerformLayout();
-            this.toolStrip1.ResumeLayout(false);
-            this.toolStrip1.PerformLayout();
             this.strpFile.ResumeLayout(false);
             this.strpFile.PerformLayout();
             this.strpActions.ResumeLayout(false);
             this.strpActions.PerformLayout();
+            this.toolStrip1.ResumeLayout(false);
+            this.toolStrip1.PerformLayout();
             this.ResumeLayout(false);
 
         }

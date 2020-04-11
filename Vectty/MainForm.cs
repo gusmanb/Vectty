@@ -15,6 +15,7 @@ namespace Vectty
         SpeccyDrawControl drawArea;
         Form containerForm;
         ActionList actionListFrm;
+        PatternEditor patternEditorFrm;
         public MainForm()
         {
             InitializeComponent();
@@ -34,9 +35,10 @@ namespace Vectty
             drawArea.HistoryChanged += drawArea_HistoryChanged;
             drawArea.PolyToolChanged += DrawArea_PolyToolChanged;
             drawArea.ActionsChanged += DrawArea_ActionsChanged;
-
+            drawArea.GrabFinished += DrawArea_GrabFinished;
             containerForm = new Form();
             containerForm.FormBorderStyle = FormBorderStyle.FixedToolWindow;
+            containerForm.ControlBox = false;
             containerForm.TopLevel = false;
             containerForm.ClientSize = drawArea.Size;
             containerForm.MaximizeBox = false;
@@ -63,8 +65,7 @@ namespace Vectty
             actionListFrm.Move += ActionListFrm_Move;
             windowPanel.Controls.Add(actionListFrm);
 
-            actionListFrm.Location = containerForm.Location;
-            actionListFrm.Left += containerForm.Width + 5;
+           
 
             actionListFrm.CopyActions += ActionListFrm_CopyActions;
             actionListFrm.PasteActions += ActionListFrm_PasteActions;
@@ -75,6 +76,63 @@ namespace Vectty
             actionListFrm.VerticalMirrorActions += ActionListFrm_VerticalMirrorActions;
             actionListFrm.AbsoulteHorizontalMirrorActions += ActionListFrm_AbsoulteHorizontalMirrorActions;
             actionListFrm.AbsoulteVerticalMirrorActions += ActionListFrm_AbsoulteVerticalMirrorActions;
+            actionListFrm.GrabActions += ActionListFrm_GrabActions;
+
+            patternEditorFrm = new PatternEditor();
+            patternEditorFrm.FormBorderStyle = FormBorderStyle.SizableToolWindow;
+            patternEditorFrm.TopLevel = false;
+            patternEditorFrm.MaximizeBox = false;
+            patternEditorFrm.MinimizeBox = false;
+            patternEditorFrm.Visible = true;
+            patternEditorFrm.Move += PatternEditorFrm_Move;
+            windowPanel.Controls.Add(patternEditorFrm);
+
+            actionListFrm.Left = containerForm.Right + 5;
+            actionListFrm.Height = containerForm.Height;
+            patternEditorFrm.Left = actionListFrm.Right + 5;
+            patternEditorFrm.Top = actionListFrm.Top;
+            patternEditorFrm.Height = actionListFrm.Height;
+        }
+
+        private void PatternEditorFrm_Move(object sender, EventArgs e)
+        {
+            windowPanel.AutoScroll = true;
+        }
+
+        private void DrawArea_GrabFinished(object sender, EventArgs e)
+        {
+            pnlTool.BackgroundImage.Dispose();
+
+            switch (drawArea.Tool)
+            {
+                case SpeccyDrawControlTool.Line:
+                    pnlTool.BackgroundImage = btnLine.Image;
+                    break;
+                case SpeccyDrawControlTool.Rectangle:
+                    pnlTool.BackgroundImage = btnRect.Image;
+                    break;
+                case SpeccyDrawControlTool.Circle:
+                    pnlTool.BackgroundImage = btnCircle.Image;
+                    break;
+                case SpeccyDrawControlTool.Arc:
+                    pnlTool.BackgroundImage = btnArc.Image;
+                    break;
+                case SpeccyDrawControlTool.Fill:
+                    pnlTool.BackgroundImage = btnFill.Image;
+                    break;
+                //case SpeccyDrawControlTool.BlockEraser:
+                //    pnlTool.BackgroundImage = btnErase.Image;
+                //    break;
+                case SpeccyDrawControlTool.Brush:
+                    pnlTool.BackgroundImage = btnBrush.Image;
+                    break;
+            }
+        }
+
+        private void ActionListFrm_GrabActions(object sender, ActionEventArgs e)
+        {
+            drawArea.BeginGrab(e.Index, e.Count);
+            pnlTool.BackgroundImage = Properties.Resources.Grab;
         }
 
         private void ActionListFrm_AbsoulteVerticalMirrorActions(object sender, ActionEventArgs e)
@@ -125,12 +183,6 @@ namespace Vectty
             Clipboard.SetText(items);
         }
 
-        protected override void OnResize(EventArgs e)
-        {
-            base.OnResize(e);
-            Console.WriteLine(this.Size.ToString());
-        }
-
         private void ActionListFrm_Move(object sender, EventArgs e)
         {
             windowPanel.AutoScroll = true;
@@ -161,8 +213,12 @@ namespace Vectty
             drawArea.Scale = int.Parse(cbScale.SelectedItem.ToString());
             containerForm.ClientSize = drawArea.Size;
             this.Refresh();
-            actionListFrm.Location = containerForm.Location;
-            actionListFrm.Left += containerForm.Width + 5;
+
+            actionListFrm.Left = containerForm.Right + 5;
+            actionListFrm.Height = containerForm.Height;
+            patternEditorFrm.Left = actionListFrm.Right + 5;
+            patternEditorFrm.Top = actionListFrm.Top;
+            patternEditorFrm.Height = actionListFrm.Height;
         }
 
         private void btnBlackPaper_Click(object sender, EventArgs e)
@@ -289,12 +345,6 @@ namespace Vectty
         {
             drawArea.Tool = SpeccyDrawControlTool.Fill;
             pnlTool.BackgroundImage = btnFill.Image;
-        }
-
-        private void btnErase_Click(object sender, EventArgs e)
-        {
-            drawArea.Tool = SpeccyDrawControlTool.BlockEraser;
-            pnlTool.BackgroundImage = btnErase.Image;
         }
 
         private void btnBrush_Click(object sender, EventArgs e)
