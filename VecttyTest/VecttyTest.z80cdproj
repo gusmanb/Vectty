@@ -27,6 +27,7 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="Listings\Code.list" />
+    <None Include="Listings\Program.list" />
   </ItemGroup>
   <ItemGroup>
     <Tap Include="TapeFiles\Code.tap" />

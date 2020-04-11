@@ -89,6 +89,7 @@
             this.btnBG = new System.Windows.Forms.ToolStripButton();
             this.btnGrid = new System.Windows.Forms.ToolStripButton();
             this.cbBGMode = new System.Windows.Forms.ToolStripComboBox();
+            this.tbAlpha = new Vectty.Controls.ToolStripTrackBar();
             this.strpFile = new System.Windows.Forms.ToolStrip();
             this.btnNew = new System.Windows.Forms.ToolStripButton();
             this.btnOpen = new System.Windows.Forms.ToolStripButton();
@@ -119,7 +120,7 @@
             this.toolStripContainer1.ContentPanel.BackColor = System.Drawing.SystemColors.ControlDarkDark;
             this.toolStripContainer1.ContentPanel.Controls.Add(this.windowPanel);
             this.toolStripContainer1.ContentPanel.Controls.Add(this.panel1);
-            this.toolStripContainer1.ContentPanel.Size = new System.Drawing.Size(643, 507);
+            this.toolStripContainer1.ContentPanel.Size = new System.Drawing.Size(677, 581);
             this.toolStripContainer1.Dock = System.Windows.Forms.DockStyle.Fill;
             // 
             // toolStripContainer1.LeftToolStripPanel
@@ -133,15 +134,15 @@
             // 
             this.toolStripContainer1.RightToolStripPanel.BackColor = System.Drawing.SystemColors.Control;
             this.toolStripContainer1.RightToolStripPanel.Controls.Add(this.strpTools);
-            this.toolStripContainer1.Size = new System.Drawing.Size(705, 532);
+            this.toolStripContainer1.Size = new System.Drawing.Size(739, 606);
             this.toolStripContainer1.TabIndex = 0;
             this.toolStripContainer1.Text = "toolStripContainer1";
             // 
             // toolStripContainer1.TopToolStripPanel
             // 
-            this.toolStripContainer1.TopToolStripPanel.Controls.Add(this.toolStrip1);
             this.toolStripContainer1.TopToolStripPanel.Controls.Add(this.strpFile);
             this.toolStripContainer1.TopToolStripPanel.Controls.Add(this.strpActions);
+            this.toolStripContainer1.TopToolStripPanel.Controls.Add(this.toolStrip1);
             // 
             // windowPanel
             // 
@@ -150,7 +151,7 @@
             this.windowPanel.Dock = System.Windows.Forms.DockStyle.Fill;
             this.windowPanel.Location = new System.Drawing.Point(0, 0);
             this.windowPanel.Name = "windowPanel";
-            this.windowPanel.Size = new System.Drawing.Size(643, 481);
+            this.windowPanel.Size = new System.Drawing.Size(677, 555);
             this.windowPanel.TabIndex = 2;
             // 
             // panel1
@@ -169,9 +170,9 @@
             this.panel1.Controls.Add(this.pnlInk);
             this.panel1.Controls.Add(this.pnlPaper);
             this.panel1.Dock = System.Windows.Forms.DockStyle.Bottom;
-            this.panel1.Location = new System.Drawing.Point(0, 481);
+            this.panel1.Location = new System.Drawing.Point(0, 555);
             this.panel1.Name = "panel1";
-            this.panel1.Size = new System.Drawing.Size(643, 26);
+            this.panel1.Size = new System.Drawing.Size(677, 26);
             this.panel1.TabIndex = 1;
             // 
             // label6
@@ -717,10 +718,11 @@
             this.cbScale,
             this.btnBG,
             this.btnGrid,
-            this.cbBGMode});
-            this.toolStrip1.Location = new System.Drawing.Point(166, 0);
+            this.cbBGMode,
+            this.tbAlpha});
+            this.toolStrip1.Location = new System.Drawing.Point(170, 0);
             this.toolStrip1.Name = "toolStrip1";
-            this.toolStrip1.Size = new System.Drawing.Size(283, 25);
+            this.toolStrip1.Size = new System.Drawing.Size(356, 25);
             this.toolStrip1.TabIndex = 3;
             // 
             // toolStripLabel3
@@ -767,10 +769,19 @@
             this.cbBGMode.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.cbBGMode.Items.AddRange(new object[] {
             "Disabled",
-            "Interlaced",
-            "Over"});
+            "Over",
+            "AlphaBlend"});
             this.cbBGMode.Name = "cbBGMode";
             this.cbBGMode.Size = new System.Drawing.Size(124, 23);
+            // 
+            // tbAlpha
+            // 
+            this.tbAlpha.AutoSize = false;
+            this.tbAlpha.Name = "tbAlpha";
+            this.tbAlpha.Size = new System.Drawing.Size(104, 16);
+            this.tbAlpha.Text = "Alpha value";
+            this.tbAlpha.Value = 5;
+            this.tbAlpha.ValueChanged += new System.EventHandler(this.tbAlpha_ValueChanged);
             // 
             // strpFile
             // 
@@ -862,7 +873,7 @@
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(705, 532);
+            this.ClientSize = new System.Drawing.Size(739, 606);
             this.Controls.Add(this.toolStripContainer1);
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Name = "MainForm";
@@ -964,6 +975,7 @@
         private System.Windows.Forms.Panel windowPanel;
         private System.Windows.Forms.Label label6;
         private System.Windows.Forms.Panel pnlExtra;
+        private Controls.ToolStripTrackBar tbAlpha;
     }
 }
 

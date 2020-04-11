@@ -36,6 +36,9 @@
     <ApplicationIcon>favicon.ico</ApplicationIcon>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Newtonsoft.Json, Version=12.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <HintPath>..\packages\Newtonsoft.Json.12.0.3\lib\net45\Newtonsoft.Json.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Xml.Linq" />
@@ -49,6 +52,21 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="ActionList.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="ActionList.Designer.cs">
+      <DependentUpon>ActionList.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Controls\PixelDrawControl.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Controls\PixelDrawControl.Designer.cs">
+      <DependentUpon>PixelDrawControl.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Controls\ToolStripTrackBar.cs">
+      <SubType>Component</SubType>
+    </Compile>
     <Compile Include="Exetnsions.cs" />
     <Compile Include="ExportTypeSelector.cs">
       <SubType>Form</SubType>
@@ -78,6 +96,12 @@
     </Compile>
     <Compile Include="ZXClasses\DrawClasses.cs" />
     <Compile Include="ZXClasses\RenderFunctions.cs" />
+    <EmbeddedResource Include="ActionList.resx">
+      <DependentUpon>ActionList.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Controls\PixelDrawControl.resx">
+      <DependentUpon>PixelDrawControl.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="ExportTypeSelector.resx">
       <DependentUpon>ExportTypeSelector.cs</DependentUpon>
     </EmbeddedResource>
@@ -97,6 +121,7 @@
     <EmbeddedResource Include="Controls\SpeccyDrawControl.resx">
       <DependentUpon>SpeccyDrawControl.cs</DependentUpon>
     </EmbeddedResource>
+    <None Include="packages.config" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
@@ -184,6 +209,18 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="favicon.ico" />
+    <None Include="Icons\AbsVMirror.png" />
+    <None Include="Icons\AbsHMirror.png" />
+    <None Include="Icons\VMirror.png" />
+    <None Include="Icons\HMirror.png" />
+    <None Include="Icons\Down.png" />
+    <None Include="Icons\Up.png" />
+    <None Include="Icons\Paste.png" />
+    <None Include="Icons\Delete.png" />
+    <None Include="Icons\Copy.png" />
+    <None Include="Icons\Plus.png" />
+    <None Include="Icons\Less.png" />
+    <None Include="Icons\Duplicate.png" />
     <None Include="Icons\Poly.png" />
     <None Include="Icons\Over.png" />
     <None Include="Icons\Interlaced.png" />

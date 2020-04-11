@@ -14,6 +14,7 @@ namespace Vectty
     {
         SpeccyDrawControl drawArea;
         Form containerForm;
+        ActionList actionListFrm;
         public MainForm()
         {
             InitializeComponent();
@@ -32,14 +33,16 @@ namespace Vectty
             drawArea.ActiveAttribute.Paper = ZXClasses.ZXColor.White;
             drawArea.HistoryChanged += drawArea_HistoryChanged;
             drawArea.PolyToolChanged += DrawArea_PolyToolChanged;
+            drawArea.ActionsChanged += DrawArea_ActionsChanged;
 
             containerForm = new Form();
-            containerForm.FormBorderStyle = FormBorderStyle.FixedSingle;
+            containerForm.FormBorderStyle = FormBorderStyle.FixedToolWindow;
             containerForm.TopLevel = false;
             containerForm.ClientSize = drawArea.Size;
             containerForm.MaximizeBox = false;
             containerForm.MinimizeBox = false;
             containerForm.FormClosing += containerForm_FormClosing;
+            containerForm.Text = "Drawing";
 
             containerForm.Controls.Add(drawArea);
             containerForm.Move += ContainerForm_Move;
@@ -49,7 +52,93 @@ namespace Vectty
             windowPanel.Controls.Add(containerForm);
             containerForm.Visible = true;
             drawArea.Visible = true;
+            drawArea.BackgroundAlpha = 0.5f;
 
+            actionListFrm = new ActionList();
+            actionListFrm.FormBorderStyle = FormBorderStyle.SizableToolWindow;
+            actionListFrm.TopLevel = false;
+            actionListFrm.MaximizeBox = false;
+            actionListFrm.MinimizeBox = false;
+            actionListFrm.Visible = true;
+            actionListFrm.Move += ActionListFrm_Move;
+            windowPanel.Controls.Add(actionListFrm);
+
+            actionListFrm.Location = containerForm.Location;
+            actionListFrm.Left += containerForm.Width + 5;
+
+            actionListFrm.CopyActions += ActionListFrm_CopyActions;
+            actionListFrm.PasteActions += ActionListFrm_PasteActions;
+            actionListFrm.ShiftUpActions += ActionListFrm_ShiftUpActions;
+            actionListFrm.ShiftDownActions += ActionListFrm_ShiftDownActions;
+            actionListFrm.DeleteActions += ActionListFrm_DeleteActions;
+            actionListFrm.HorizontalMirrorActions += ActionListFrm_HorizontalMirrorActions;
+            actionListFrm.VerticalMirrorActions += ActionListFrm_VerticalMirrorActions;
+            actionListFrm.AbsoulteHorizontalMirrorActions += ActionListFrm_AbsoulteHorizontalMirrorActions;
+            actionListFrm.AbsoulteVerticalMirrorActions += ActionListFrm_AbsoulteVerticalMirrorActions;
+        }
+
+        private void ActionListFrm_AbsoulteVerticalMirrorActions(object sender, ActionEventArgs e)
+        {
+            drawArea.VMirrorOperation(e.Index, e.Count, true);
+        }
+
+        private void ActionListFrm_AbsoulteHorizontalMirrorActions(object sender, ActionEventArgs e)
+        {
+            drawArea.HMirrorOperation(e.Index, e.Count, true);
+        }
+
+        private void ActionListFrm_VerticalMirrorActions(object sender, ActionEventArgs e)
+        {
+            drawArea.VMirrorOperation(e.Index, e.Count, false);
+        }
+
+        private void ActionListFrm_HorizontalMirrorActions(object sender, ActionEventArgs e)
+        {
+            drawArea.HMirrorOperation(e.Index, e.Count, false);
+        }
+
+        private void ActionListFrm_DeleteActions(object sender, ActionEventArgs e)
+        {
+            drawArea.DeleteOperation(e.Index, e.Count);
+        }
+
+        private void ActionListFrm_ShiftDownActions(object sender, ActionEventArgs e)
+        {
+            drawArea.DownOperation(e.Index, e.Count);
+        }
+
+        private void ActionListFrm_ShiftUpActions(object sender, ActionEventArgs e)
+        {
+            drawArea.UpOperation(e.Index, e.Count);
+        }
+
+        private void ActionListFrm_PasteActions(object sender, EventArgs e)
+        {
+            string text = Clipboard.GetText();
+            if (text != null)
+                drawArea.ImportOperations(text);
+        }
+
+        private void ActionListFrm_CopyActions(object sender, ActionEventArgs e)
+        {
+            string items = drawArea.ExportOperations(e.Index, e.Count);
+            Clipboard.SetText(items);
+        }
+
+        protected override void OnResize(EventArgs e)
+        {
+            base.OnResize(e);
+            Console.WriteLine(this.Size.ToString());
+        }
+
+        private void ActionListFrm_Move(object sender, EventArgs e)
+        {
+            windowPanel.AutoScroll = true;
+        }
+
+        private void DrawArea_ActionsChanged(object sender, EventArgs e)
+        {
+            actionListFrm.UpdateList(drawArea.CurrentActions);
         }
 
         private void DrawArea_PolyToolChanged(object sender, EventArgs e)
@@ -71,6 +160,9 @@ namespace Vectty
         {
             drawArea.Scale = int.Parse(cbScale.SelectedItem.ToString());
             containerForm.ClientSize = drawArea.Size;
+            this.Refresh();
+            actionListFrm.Location = containerForm.Location;
+            actionListFrm.Left += containerForm.Width + 5;
         }
 
         private void btnBlackPaper_Click(object sender, EventArgs e)
@@ -333,6 +425,7 @@ namespace Vectty
                         return;
 
                     drawArea.BackgroundImage = Image.FromFile(dlg.FileName);
+                    cbBGMode.SelectedIndex = 2;
                 }
                 catch { MessageBox.Show("Error loading background image", "Error"); }
             }
@@ -341,6 +434,16 @@ namespace Vectty
         private void cbBGMode_SelectedIndexChanged(object sender, EventArgs e)
         {
             drawArea.BackgroundMode = (SpeccyDrawControlBGMode)cbBGMode.SelectedIndex;
+        }
+
+        private void toolStripTrackBar1_ValueChanged(object sender, EventArgs e)
+        {
+
+        }
+
+        private void tbAlpha_ValueChanged(object sender, EventArgs e)
+        {
+            drawArea.BackgroundAlpha = tbAlpha.Value / 10.0f;
         }
     }
 }

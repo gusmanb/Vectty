@@ -601,6 +601,11 @@ __LABEL16:
 	inc hl
 	ld (ix-5), l
 	ld (ix-4), h
+	ld hl, 0
+	push hl
+	ld hl, _pattern
+	call __ARRAY
+	push hl
 	ld l, (ix-15)
 	ld h, (ix-14)
 	ld a, l
@@ -608,7 +613,7 @@ __LABEL16:
 	ld l, (ix-13)
 	ld h, (ix-12)
 	ld a, l
-	call _FloodFill
+	call _SPPFill
 	jp __LABEL21
 __LABEL20:
 	ld a, (ix-3)
@@ -784,99 +789,557 @@ _Dibujar__leave:
 	ex (sp), hl
 	exx
 	ret
-_FloodFill:
-#line 195
-		ld d, a
-		pop hl
-		pop bc
-		ld e, b
-		push hl
-fill:
-		ld l,255
-		push hl
-nextrun:
-		ld a,d
-		and 7
-		inc a
+_SPPFill:
+#line 205
+		JP SPPFill_start
+SPGetScrnAddr:
+		and $07
+		or $40
+		ld d,a
+		ld a,h
+		rra
+		rra
+		rra
+		and $18
+		or d
+		ld d,a
+		ld a,l
+		and $07
 		ld b,a
-		ld a,1
-bitpos:
-		rrca
-		djnz bitpos
-		ld c,b
+		ld a,$80
+		jr z, norotate
+rotloop:
+		rra
+		djnz rotloop
+norotate:
 		ld b,a
-seekleft:
-		ld a,d
-		or a
-		jr z,goright
-		dec d
-		rlc b
-		call scrpos
-		jr nz,seekleft
-seekright:
-		rrc b
-		inc d
-		jr z,rightedge
-goright:
-		call scrpos
-		jr z,rightedge
-		ld (hl),a
-		inc e
-		call checkadj
-		dec e
-		dec e
-		call checkadj
-		inc e
-		jr seekright
-rightedge:
-		pop de
-		ld a,e
-		inc a
-		jr nz,nextrun
+		srl l
+		srl l
+		srl l
+		ld a,h
+		rla
+		rla
+		and $e0
+		or l
+		ld e,a
 		ret
-scrpos:
-		ld a,e
-		and 248
-		rra
-		scf
-		rra
-		rra
-		ld l,a
-		xor e
-		and 248
-		xor e
+SPPixelUp:
+		ld a,h
+		dec h
+		and $07
+		ret nz
+		ld a,$08
+		add a,h
 		ld h,a
 		ld a,l
-		xor d
-		and 7
-		xor d
-		rrca
-		rrca
-		rrca
+		sub $20
 		ld l,a
-		ld a,b
-		or (hl)
-		cp (hl)
-		ret
-checkadj:
-		sla c
-		ld a,e
-		cp 192
 		ret nc
-		call scrpos+1
-		ret z
-		inc c
-		bit 2,c
+		ld a,h
+		sub $08
+		ld h,a
+		cp $40
+		ret
+SPPixelDown:
+		inc h
+		ld a,h
+		and $07
 		ret nz
-		pop hl
+		ld a,h
+		sub $08
+		ld h,a
+		ld a,l
+		add a,$20
+		ld l,a
+		ret nc
+		ld a,h
+		add a,$08
+		ld h,a
+		cp $58
+		ccf
+		ret
+SPCharLeft:
+		ld a,l
+		dec l
+		or a
+		ret nz
+		ld a,h
+		sub $08
+		ld h,a
+		cp $40
+		ret
+SPCharRight:
+		inc l
+		ret nz
+		ld a,8
+		add a,h
+		ld h,a
+		cp $58
+		ccf
+		ret
+SPPFill_start:
+		POP BC
+		POP HL
+		POP DE
+		LD L,A
+		PUSH BC
+		PUSH IX
+		LD BC,300
+SPPFill:
 		push de
-		jp (hl)
-#line 280
-_FloodFill__leave:
+		dec bc
+		push bc
+		ld a,h
+		call SPGetScrnAddr
+		ex de,hl
+		call bytefill
+		jr c, viable
+		pop bc
+		pop de
+		jp SPPFill_end
+viable:
+		ex de,hl
+		ld hl,-7
+		add hl,sp
+		push hl
+		push hl
+		pop ix
+		dec hl
+		dec hl
+		dec hl
+		push hl
+		ld hl,-12
+		add hl,sp
+		push hl
+		xor a
+		push af
+		dec sp
+		push de
+		push bc
+		inc sp
+		push af
+		dec sp
+		ld c,(ix+7)
+		ld b,(ix+8)
+		inc bc
+		ld l,c
+		ld h,b
+		add hl,bc
+		add hl,bc
+		ld c,l
+		ld b,h
+		ld hl,0
+		sbc hl,bc
+		add hl,sp
+		ld (hl),0
+		ld sp,hl
+		ld a,$80
+		push af
+		inc sp
+		ld e,l
+		ld d,h
+		inc de
+		dec bc
+		ldir
+pfloop:
+		ld l,(ix+3)
+		ld h,(ix+4)
+		ld e,(ix+1)
+		ld d,(ix+2)
+		call investigate
+		ld (ix+1),e
+		ld (ix+2),d
+		ld (ix+3),l
+		ld (ix+4),h
+		ld l,(ix+5)
+		ld h,(ix+6)
+		ld c,(ix+7)
+		ld b,(ix+8)
+		call applypattern
+		ld (ix+7),c
+		ld (ix+8),b
+		ld (ix+5),l
+		ld (ix+6),h
+		ld a,(hl)
+		cp 40h
+		jp nc, pfloop
+endpfill:
+		ld de,11
+		add ix,de
+		ld sp,ix
+		or a
+		pop ix
+		ret
+investigate:
+		ld a,(hl)
+		cp 80h
+		jp c, inowrap
+		push ix
+		pop hl
+		ld a,(hl)
+inowrap:
+		cp 40h
+		jp c, endinv
+		ld b,a
+		dec hl
+		ld c,(hl)
+		dec hl
+		ld a,(hl)
+		dec hl
+		push hl
+		ld l,c
+		ld h,b
+		ld b,a
+goup:
+		push hl
+		call SPPixelUp
+		jr c, updeadend
+		push bc
+		call bytefill
+		call c, addnew
+		pop bc
+updeadend:
+		pop hl
+godown:
+		push hl
+		call SPPixelDown
+		jr c, downdeadend
+		push bc
+		call bytefill
+		call c, addnew
+		pop bc
+downdeadend:
+		pop hl
+goleft:
+		bit 7,b
+		jr z, goright
+		ld a,l
+		and 31
+		jr nz, okleft
+		bit 5,h
+		jr z, goright
+okleft:
+		push hl
+		call SPCharLeft
+		push bc
+		ld b,01h
+		call bytefill
+		call c, addnew
+		pop bc
+		pop hl
+goright:
+		bit 0,b
+		jr z, nextinv
+		or a
+		call SPCharRight
+		jr c, nextinv
+		ld a,l
+		and 31
+		jr z, nextinv
+		ld b,80h
+		call bytefill
+		call c, addnew
+nextinv:
+		pop hl
+		jp investigate
+endinv:
+		dec hl
+		dec hl
+		dec hl
+		ld a,(de)
+		cp 80h
+		jr c, nowrapnew
+		defb $dd
+		ld e,l
+		defb $dd
+		ld d,h
+nowrapnew:
+		xor a
+		ld (de),a
+		dec de
+		dec de
+		dec de
+		ret
+bytefill:
+		ld a,b
+		xor (hl)
+		and b
+		ret z
+bfloop:
+		ld b,a
+		rra
+		ld c,a
+		ld a,b
+		add a,a
+		or c
+		or b
+		ld c,a
+		xor (hl)
+		and c
+		cp b
+		jp nz, bfloop
+		or (hl)
+		ld (hl),a
+		scf
+		ret
+addnew:
+		push hl
+		ld l,(ix+7)
+		ld h,(ix+8)
+		ld a,h
+		or l
+		jr z, bail
+		dec hl
+		ld (ix+7),l
+		ld (ix+8),h
+		pop hl
+		ld a,(de)
+		cp 80h
+		jr c, annowrap
+		defb $dd
+		ld e,l
+		defb $dd
+		ld d,h
+annowrap:
+		ex de,hl
+		ld (hl),d
+		dec hl
+		ld (hl),e
+		dec hl
+		ld (hl),b
+		dec hl
+		ex de,hl
+		ret
+bail:
+		pop hl
+		ld a,b
+		xor (hl)
+		ld (hl),a
+		xor a
+		ld (de),a
+		ld l,(ix+5)
+		ld h,(ix+6)
+		call applypattern
+		call applypattern
+		call applypattern
+		ld de,11
+		add ix,de
+		ld sp,ix
+		scf
+		jp SPPFill_end
+applypattern:
+		ld a,(hl)
+		cp 80h
+		jp c, apnowrap
+		push ix
+		pop hl
+		ld a,(hl)
+apnowrap:
+		cp 40h
+		jr c, endapply
+		and 07h
+		add a,(ix+9)
+		ld e,a
+		ld a,0
+		adc a,(ix+10)
+		ld d,a
+		ld a,(de)
+		ld d,(hl)
+		dec hl
+		ld e,(hl)
+		dec hl
+		and (hl)
+		sub (hl)
+		dec a
+		ex de,hl
+		and (hl)
+		ld (hl),a
+		ex de,hl
+		dec hl
+		inc bc
+		jp applypattern
+endapply:
+		dec hl
+		dec hl
+		dec hl
+		ret
+SPPFill_end:
+#line 578
+_SPPFill__leave:
 	ret
 __LABEL24:
 	DEFW 0001h
 	DEFB 20h
+#line 1 "array.asm"
+
+; vim: ts=4:et:sw=4:
+	; Copyleft (K) by Jose M. Rodriguez de la Rosa
+	;  (a.k.a. Boriel)
+;  http://www.boriel.com
+	; -------------------------------------------------------------------
+	; Simple array Index routine
+	; Number of total indexes dimensions - 1 at beginning of memory
+	; HL = Start of array memory (First two bytes contains N-1 dimensions)
+	; Dimension values on the stack, (top of the stack, highest dimension)
+	; E.g. A(2, 4) -> PUSH <4>; PUSH <2>
+
+	; For any array of N dimension A(aN-1, ..., a1, a0)
+	; and dimensions D[bN-1, ..., b1, b0], the offset is calculated as
+	; O = [a0 + b0 * (a1 + b1 * (a2 + ... bN-2(aN-1)))]
+; What I will do here is to calculate the following sequence:
+	; ((aN-1 * bN-2) + aN-2) * bN-3 + ...
+
+
+#line 1 "mul16.asm"
+
+__MUL16:	; Mutiplies HL with the last value stored into de stack
+				; Works for both signed and unsigned
+
+			PROC
+
+			LOCAL __MUL16LOOP
+	        LOCAL __MUL16NOADD
+
+			ex de, hl
+			pop hl		; Return address
+			ex (sp), hl ; CALLEE caller convention
+
+__MUL16_FAST:
+	        ld b, 16
+	        ld a, h
+	        ld c, l
+	        ld hl, 0
+
+__MUL16LOOP:
+	        add hl, hl  ; hl << 1
+	        sla c
+	        rla         ; a,c << 1
+	        jp nc, __MUL16NOADD
+	        add hl, de
+
+__MUL16NOADD:
+	        djnz __MUL16LOOP
+
+			ret	; Result in hl (16 lower bits)
+
+			ENDP
+
+#line 20 "array.asm"
+
+#line 24 "C:/ZXBasic/library-asm/array.asm"
+
+__ARRAY_PTR:   ;; computes an array offset from a pointer
+	    ld c, (hl)
+	    inc hl
+	    ld h, (hl)
+	    ld l, c
+
+__ARRAY:
+		PROC
+
+		LOCAL LOOP
+		LOCAL ARRAY_END
+		LOCAL RET_ADDRESS ; Stores return address
+		LOCAL TMP_ARR_PTR ; Stores pointer temporarily
+
+	    ld e, (hl)
+	    inc hl
+	    ld d, (hl)
+	    inc hl
+	    ld (TMP_ARR_PTR), hl
+	    ex de, hl
+		ex (sp), hl	; Return address in HL, array address in the stack
+		ld (RET_ADDRESS + 1), hl ; Stores it for later
+
+		exx
+		pop hl		; Will use H'L' as the pointer
+		ld c, (hl)	; Loads Number of dimensions from (hl)
+		inc hl
+		ld b, (hl)
+		inc hl		; Ready
+		exx
+
+		ld hl, 0	; HL = Offset "accumulator"
+
+LOOP:
+#line 62 "C:/ZXBasic/library-asm/array.asm"
+		pop bc		; Get next index (Ai) from the stack
+
+#line 72 "C:/ZXBasic/library-asm/array.asm"
+
+		add hl, bc	; Adds current index
+
+		exx			; Checks if B'C' = 0
+		ld a, b		; Which means we must exit (last element is not multiplied by anything)
+		or c
+		jr z, ARRAY_END		; if B'Ci == 0 we are done
+
+		ld e, (hl)			; Loads next dimension into D'E'
+		inc hl
+		ld d, (hl)
+		inc hl
+		push de
+		dec bc				; Decrements loop counter
+		exx
+		pop de				; DE = Max bound Number (i-th dimension)
+
+	    call __FNMUL
+		jp LOOP
+
+ARRAY_END:
+		ld a, (hl)
+		exx
+
+#line 101 "C:/ZXBasic/library-asm/array.asm"
+	    LOCAL ARRAY_SIZE_LOOP
+
+	    ex de, hl
+	    ld hl, 0
+	    ld b, a
+ARRAY_SIZE_LOOP:
+	    add hl, de
+	    djnz ARRAY_SIZE_LOOP
+
+#line 111 "C:/ZXBasic/library-asm/array.asm"
+
+	    ex de, hl
+		ld hl, (TMP_ARR_PTR)
+		ld a, (hl)
+		inc hl
+		ld h, (hl)
+		ld l, a
+		add hl, de  ; Adds element start
+
+RET_ADDRESS:
+		jp 0
+
+	    ;; Performs a faster multiply for little 16bit numbs
+	    LOCAL __FNMUL, __FNMUL2
+
+__FNMUL:
+	    xor a
+	    or h
+	    jp nz, __MUL16_FAST
+	    or l
+	    ret z
+
+	    cp 33
+	    jp nc, __MUL16_FAST
+
+	    ld b, l
+	    ld l, h  ; HL = 0
+
+__FNMUL2:
+	    add hl, de
+	    djnz __FNMUL2
+	    ret
+
+TMP_ARR_PTR:
+	    DW 0  ; temporary storage for pointer to tables
+
+		ENDP
+
+#line 1157 "Program.zxbas"
 #line 1 "bor16.asm"
 
 ; vim:ts=4:et:
@@ -898,7 +1361,7 @@ __BOR16:
 
 	    ret
 
-#line 864 "Program.zxbas"
+#line 1158 "Program.zxbas"
 #line 1 "circle.asm"
 
 	; Bresenham's like circle algorithm
@@ -1440,7 +1903,7 @@ __CIRCLE_PLOT:
 			ret
 
 			ENDP
-#line 865 "Program.zxbas"
+#line 1159 "Program.zxbas"
 #line 1 "divf.asm"
 
 #line 1 "stackf.asm"
@@ -1550,7 +2013,7 @@ __DIVBYZERO:
 
 		ENDP
 
-#line 866 "Program.zxbas"
+#line 1160 "Program.zxbas"
 #line 1 "draw.asm"
 
 	; DRAW using bresenhams algorithm and screen positioning
@@ -2036,7 +2499,7 @@ __FASTPLOTEND:
 
 	    ENDP
 
-#line 867 "Program.zxbas"
+#line 1161 "Program.zxbas"
 #line 1 "draw3.asm"
 
 	; -----------------------------------------------------------
@@ -2543,7 +3006,7 @@ SUM_B:
 	        jp      __DRAW          ;;forward to LINE-DRAW (Fastcalled)
 
 	        ENDP
-#line 868 "Program.zxbas"
+#line 1162 "Program.zxbas"
 #line 1 "lti16.asm"
 
 #line 1 "lei8.asm"
@@ -2586,7 +3049,7 @@ checkParity:
 	    inc a       ; True
 	    ret
 	    ENDP
-#line 869 "Program.zxbas"
+#line 1163 "Program.zxbas"
 #line 1 "mulf.asm"
 
 
@@ -2610,7 +3073,7 @@ __MULF:	; Multiplication
 
 		jp __FPSTACK_POP
 
-#line 870 "Program.zxbas"
+#line 1164 "Program.zxbas"
 #line 1 "ploadf.asm"
 
 	; Parameter / Local var load
@@ -2656,7 +3119,7 @@ __PLOADF:
 	    add hl, de
 	    jp __LOADF
 
-#line 871 "Program.zxbas"
+#line 1165 "Program.zxbas"
 
 #line 1 "print.asm"
 
@@ -3608,7 +4071,7 @@ __PRINT_TABLE:    ; Jump table for 0 .. 22 codes
 	        ENDP
 
 
-#line 873 "Program.zxbas"
+#line 1167 "Program.zxbas"
 #line 1 "printstr.asm"
 
 
@@ -3985,7 +4448,7 @@ __PRINT_STR:
 
 			ENDP
 
-#line 874 "Program.zxbas"
+#line 1168 "Program.zxbas"
 #line 1 "pstoref.asm"
 
 	; Stores FP number in A ED CB at location HL+IX
@@ -4035,7 +4498,7 @@ __PSTOREF:
 		pop de
 	    jp __STOREF
 
-#line 875 "Program.zxbas"
+#line 1169 "Program.zxbas"
 #line 1 "u32tofreg.asm"
 
 #line 1 "neg32.asm"
@@ -4159,11 +4622,27 @@ __U32TOFREG_END:
 		ret
 	    ENDP
 
-#line 876 "Program.zxbas"
+#line 1170 "Program.zxbas"
 
 ZXBASIC_USER_DATA:
-_vectImg:
+_pattern:
 	DEFW __LABEL35
+_pattern.__DATA__.__PTR__:
+	DEFW _pattern.__DATA__
+_pattern.__DATA__:
+	DEFB 0AAh
+	DEFB 55h
+	DEFB 0AAh
+	DEFB 55h
+	DEFB 0AAh
+	DEFB 55h
+	DEFB 0AAh
+	DEFB 55h
+__LABEL35:
+	DEFW 0000h
+	DEFB 01h
+_vectImg:
+	DEFW __LABEL36
 _vectImg.__DATA__.__PTR__:
 	DEFW _vectImg.__DATA__
 _vectImg.__DATA__:
@@ -4758,7 +5237,7 @@ _vectImg.__DATA__:
 	DEFB 79h
 	DEFB 79h
 	DEFB 08h
-__LABEL35:
+__LABEL36:
 	DEFW 0000h
 	DEFB 01h
 __LABEL33:

@@ -138,7 +138,7 @@ namespace Vectty.ZXClasses
     {
         public Rectangle Area { get; private set; }
         public Rectangle GridArea(int Scale) { return new Rectangle(Area.X  * Scale + 1, Area.Y * Scale + 1, Area.Width * Scale - 1, Area.Height * Scale - 1); }
-        public Rectangle DoubleArea(int Scale) { return new Rectangle(Area.X * Scale, Area.Y * Scale, Area.Width * Scale, Area.Height * Scale); }
+        public Rectangle DoubleArea(double Scale) { return new Rectangle((int)(Area.X * Scale), (int)(Area.Y * Scale), (int)(Area.Width * Scale), (int)(Area.Height * Scale)); }
 
         public int X { get; private set; }
         public int Y { get; private set; }

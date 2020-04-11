@@ -12,6 +12,8 @@ namespace Vectty
 {
     public partial class PixelPerfectPicturebox : PictureBox
     {
+        bool pp = true;
+        public bool PixelPerfect { get { return pp; } set { pp = value; this.Invalidate(); } }
         public PixelPerfectPicturebox()
         {
             InitializeComponent();
@@ -19,8 +21,11 @@ namespace Vectty
 
         protected override void OnPaint(PaintEventArgs pe)
         {
-            pe.Graphics.InterpolationMode = System.Drawing.Drawing2D.InterpolationMode.NearestNeighbor;
-            pe.Graphics.PixelOffsetMode = System.Drawing.Drawing2D.PixelOffsetMode.Half;
+            if (pp)
+            {
+                pe.Graphics.InterpolationMode = System.Drawing.Drawing2D.InterpolationMode.NearestNeighbor;
+                pe.Graphics.PixelOffsetMode = System.Drawing.Drawing2D.PixelOffsetMode.Half;
+            }
             base.OnPaint(pe);
         }
     }
