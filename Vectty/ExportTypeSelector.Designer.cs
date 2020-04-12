@@ -40,11 +40,12 @@
             this.ckInclude = new System.Windows.Forms.CheckBox();
             this.label2 = new System.Windows.Forms.Label();
             this.txtAddr = new System.Windows.Forms.TextBox();
+            this.ckPatterns = new System.Windows.Forms.CheckBox();
             this.SuspendLayout();
             // 
             // btnAccept
             // 
-            this.btnAccept.Location = new System.Drawing.Point(124, 185);
+            this.btnAccept.Location = new System.Drawing.Point(124, 208);
             this.btnAccept.Name = "btnAccept";
             this.btnAccept.Size = new System.Drawing.Size(75, 23);
             this.btnAccept.TabIndex = 0;
@@ -55,7 +56,7 @@
             // btnCancel
             // 
             this.btnCancel.DialogResult = System.Windows.Forms.DialogResult.Cancel;
-            this.btnCancel.Location = new System.Drawing.Point(12, 185);
+            this.btnCancel.Location = new System.Drawing.Point(12, 208);
             this.btnCancel.Name = "btnCancel";
             this.btnCancel.Size = new System.Drawing.Size(75, 23);
             this.btnCancel.TabIndex = 1;
@@ -100,14 +101,14 @@
             // 
             // txtPath
             // 
-            this.txtPath.Location = new System.Drawing.Point(12, 158);
+            this.txtPath.Location = new System.Drawing.Point(12, 181);
             this.txtPath.Name = "txtPath";
             this.txtPath.Size = new System.Drawing.Size(134, 20);
             this.txtPath.TabIndex = 5;
             // 
             // btnSelectPath
             // 
-            this.btnSelectPath.Location = new System.Drawing.Point(153, 156);
+            this.btnSelectPath.Location = new System.Drawing.Point(153, 179);
             this.btnSelectPath.Name = "btnSelectPath";
             this.btnSelectPath.Size = new System.Drawing.Size(46, 23);
             this.btnSelectPath.TabIndex = 6;
@@ -118,7 +119,7 @@
             // txtIdent
             // 
             this.txtIdent.Enabled = false;
-            this.txtIdent.Location = new System.Drawing.Point(65, 104);
+            this.txtIdent.Location = new System.Drawing.Point(65, 127);
             this.txtIdent.Name = "txtIdent";
             this.txtIdent.Size = new System.Drawing.Size(134, 20);
             this.txtIdent.TabIndex = 7;
@@ -126,7 +127,7 @@
             // label1
             // 
             this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(12, 107);
+            this.label1.Location = new System.Drawing.Point(12, 130);
             this.label1.Name = "label1";
             this.label1.Size = new System.Drawing.Size(47, 13);
             this.label1.TabIndex = 8;
@@ -145,7 +146,7 @@
             // label2
             // 
             this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(12, 133);
+            this.label2.Location = new System.Drawing.Point(12, 156);
             this.label2.Name = "label2";
             this.label2.Size = new System.Drawing.Size(45, 13);
             this.label2.TabIndex = 11;
@@ -153,10 +154,20 @@
             // 
             // txtAddr
             // 
-            this.txtAddr.Location = new System.Drawing.Point(65, 130);
+            this.txtAddr.Location = new System.Drawing.Point(65, 153);
             this.txtAddr.Name = "txtAddr";
             this.txtAddr.Size = new System.Drawing.Size(134, 20);
             this.txtAddr.TabIndex = 10;
+            // 
+            // ckPatterns
+            // 
+            this.ckPatterns.AutoSize = true;
+            this.ckPatterns.Location = new System.Drawing.Point(12, 104);
+            this.ckPatterns.Name = "ckPatterns";
+            this.ckPatterns.Size = new System.Drawing.Size(102, 17);
+            this.ckPatterns.TabIndex = 12;
+            this.ckPatterns.Text = "Include patterns";
+            this.ckPatterns.UseVisualStyleBackColor = true;
             // 
             // ExportTypeSelector
             // 
@@ -164,7 +175,8 @@
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.CancelButton = this.btnCancel;
-            this.ClientSize = new System.Drawing.Size(211, 219);
+            this.ClientSize = new System.Drawing.Size(211, 241);
+            this.Controls.Add(this.ckPatterns);
             this.Controls.Add(this.label2);
             this.Controls.Add(this.txtAddr);
             this.Controls.Add(this.ckInclude);
@@ -202,5 +214,6 @@
         private System.Windows.Forms.CheckBox ckInclude;
         private System.Windows.Forms.Label label2;
         private System.Windows.Forms.TextBox txtAddr;
+        private System.Windows.Forms.CheckBox ckPatterns;
     }
 }

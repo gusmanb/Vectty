@@ -1,4 +1,9 @@
-﻿#define ATTRSTART 22528
+﻿
+
+
+'Funciones de dibujado
+
+#define ATTRSTART 22528
 #define ATTREND 23296
 
 #define LINETOOL 200
@@ -6,11 +11,13 @@
 #define CIRCLETOOL 202
 #define ARCTOOL 203
 #define FILLTOOL 204
-#define ERASETOOL 205
+#define TEXTURETOOL 205
 #define POLYTOOL 250
 #define ENDOPS 255
 
-sub Dibujar(ImageSource as uinteger)
+Dim ptrnSolido(7) as uByte => { $FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF }
+
+sub Dibujar(ImageSource as uinteger, PatternSource as uInteger)
 
     dim imgAddr as uinteger = ImageSource
     dim attrAddr as uInteger = ATTRSTART
@@ -129,15 +136,17 @@ sub Dibujar(ImageSource as uinteger)
             x0 = peek(imgAddr + 1)
 			imgAddr = imgAddr + 2
 
-            FloodFill(x0, y0)
+            SPPFill (x0, y0, @ptrnSolido(0))
 
-        else if op = ERASETOOL
+        else if op = TEXTURETOOL
 
 			y0 = peek(imgAddr)
             x0 = peek(imgAddr + 1)
-			imgAddr = imgAddr + 2
+			dist = peek(imgAddr + 2)
 
-			print at y0, x0 ; " ";
+			imgAddr = imgAddr + 3
+
+			SPPFill (x0, y0, PatternSource + (dist * 8))
 
         end if
 
@@ -191,440 +200,13 @@ sub Dibujar(ImageSource as uinteger)
 
 end sub
 
-sub fastcall FloodFill(x as ubyte, y as ubyte)
-
-asm
-
-ld d, a ;d = x
-
-pop hl  ;pop ret address
-
-pop bc  ;pop y
-
-ld e, b ;e = y
-
-push hl ;push ret address again
-
-; scanline fill by John Metcalf
-; call with d=x-coord, e=y-coord
-
-; set end marker
-
-fill:
-  ld l,255
-  push hl
-
-; calculate bit position of pixel
-
-nextrun:
-  ld a,d
-  and 7
-  inc a
-  ld b,a
-  ld a,1
-bitpos:
-  rrca
-  djnz bitpos
-  ld c,b
-  ld b,a
-
-; move left until hitting a set pixel or the screen edge
-
-seekleft:
-  ld a,d
-  or a
-  jr z,goright
-  dec d
-  rlc b
-  call scrpos
-  jr nz,seekleft
-
-; move right until hitting a set pixel or the screen edge,
-; setting pixels as we go. Check rows above and below and
-; save their coordinates to fill later if necessary
-
-seekright:  
-  rrc b
-  inc d
-  jr z,rightedge
-goright:
-  call scrpos
-  jr z,rightedge
-  ld (hl),a
-  inc e
-  call checkadj
-  dec e
-  dec e
-  call checkadj
-  inc e
-  jr seekright
-
-; check to see if there's another row waiting to be filled
-
-rightedge:
-  pop de
-  ld a,e
-  inc a
-  jr nz,nextrun
-  ret  
-
-; calculate the pixel address and whether or not it's set
-
-scrpos:
-  ld a,e
-  and 248
-  rra
-  scf
-  rra
-  rra
-  ld l,a
-  xor e
-  and 248
-  xor e
-  ld h,a
-  ld a,l
-  xor d
-  and 7
-  xor d
-  rrca
-  rrca
-  rrca
-  ld l,a
-  ld a,b
-  or (hl)
-  cp (hl)
-  ret
-
-; check and save the coordinates of an adjacent row
-
-checkadj:
-  sla c
-  ld a,e
-  cp 192
-  ret nc
-  call scrpos+1
-  ret z
-  inc c
-  bit 2,c
-  ret nz
-  pop hl
-  push de
-  jp (hl)
-
-
-end asm
-
-end sub
-
 SUB FASTCALL SPPFill (xCoord as uByte, yCoord as uByte, fillPatternAddress as uInteger)
 	asm
-	JP SPPFill_start 
-	;
-	; SPFill
-	;
-	
-	;INCLUDE "SPconfig.def"
-	;XLIB SPPFill
-	;LIB SPGetScrnAddr, SPPixelUp, SPPixelDown, SPCharLeft, SPCharRight
-	;
-	; GetScrnAddr
-	; Alvin Albrecht 2002
-	;
-	
-	;INCLUDE "SPconfig.def"
-	;XLIB SPGetScrnAddr
-	
-	; Get Screen Address
-	;
-	; Computes the screen address given a valid pixel coordinate.
-	; (0,0) is located at the top left corner of the screen.
-	;
-	; enter: a = h = y coord
-	;        l = x coord
-	;        In hi-res mode, Carry is most significant bit of x coord (0..511 pixels)
-	; exit : de = screen address, b = pixel mask
-	; uses : af, b, de, hl
-	
-	;IF !DISP_HIRES
-	
-	SPGetScrnAddr:
-	   and $07
-	   or $40
-	   ld d,a
-	   ld a,h
-	   rra
-	   rra
-	   rra
-	   and $18
-	   or d
-	   ld d,a
-	
-	   ld a,l
-	   and $07
-	   ld b,a
-	   ld a,$80
-	   jr z, norotate
-	
-	rotloop:
-	   rra
-	   djnz rotloop
-	
-	norotate:
-	   ld b,a
-	   srl l
-	   srl l
-	   srl l
-	   ld a,h
-	   rla
-	   rla
-	   and $e0
-	   or l
-	   ld e,a
-	   ret
-	
-	;ELSE
-	;
-	;.SPGetScrnAddr
-	;   ld b,0
-	;   ld d,b
-	;   rr l
-	;   rl b
-	;   srl l
-	;   rl b
-	;   srl l
-	;   rl b
-	;   srl l
-	;   jr nc, notodd
-	;   ld d,$20
-	;
-	;.notodd
-	;   ld a,b
-	;  or a
-	;   ld a,$80
-	;  jr z, norotate
-	;
-	;.rotloop
-	;   rra
-	;   djnz rotloop
-	
-	;.norotate
-	;   ld b,a
-	;   ld a,h
-	;   and $07
-	;   or $40
-	;   or d
-	;   ld d,a
-	;   ld a,h
-	;   rra
-	;   rra
-	;   rra
-	;   and $18
-	;   or d
-	;   ld d,a
-	;
-	;   ld a,h
-	;   rla
-	;   rla
-	;   and $e0
-	 ;  or l
-	;   ld e,a
-	;   ret
-	
-	;ENDIF
-
-	;
-	; PixelUp
-	; Alvin Albrecht 2002
-	;
-	
-	;INCLUDE "SPconfig.def"
-	;XLIB SPPixelUp
-	
-	; Pixel Up
-	;
-	; Adjusts screen address HL to move one pixel up in the display.
-	; (0,0) is located at the top left corner of the screen.
-	;
-	; enter: HL = valid screen address
-	; exit : Carry = moved off screen
-	;        HL = moves one pixel up
-	; used : AF, HL
-	
-	SPPixelUp:
-	   ld a,h
-	   dec h
-	   and $07
-	   ret nz
-	   ld a,$08
-	   add a,h
-	   ld h,a
-	   ld a,l
-	   sub $20
-	   ld l,a
-	   ret nc
-	   ld a,h
-	   sub $08
-	   ld h,a
-	;IF DISP_HIRES
-	;   and $18
-	;   cp $18
-	;   ccf
-	;ELSE
-	   cp $40
-	;ENDIF
-	   ret
-
-	;
-	; PixelDown
-	; Alvin Albrecht 2002
-	;
-	
-	;INCLUDE "SPconfig.def"
-	;XLIB SPPixelDown
-	
-	; Pixel Down
-	;
-	; Adjusts screen address HL to move one pixel down in the display.
-	; (0,0) is located at the top left corner of the screen.
-	;
-	; enter: HL = valid screen address
-	; exit : Carry = moved off screen
-	;        HL = moves one pixel down
-	; used : AF, HL
-	
-	SPPixelDown:
-	   inc h
-	   ld a,h
-	   and $07
-	   ret nz
-	   ld a,h
-	   sub $08
-	   ld h,a
-	   ld a,l
-	   add a,$20
-	   ld l,a
-	   ret nc
-	   ld a,h
-	   add a,$08
-	   ld h,a
-	;IF DISP_HIRES
-	;   and $18
-	;   cp $18
-	;ELSE
-	   cp $58
-	;ENDIF
-	   ccf
-	   ret
-
-	;
-	; CharLeft
-	; Alvin Albrecht 2002
-	;
-	
-	;INCLUDE "SPconfig.def"
-	;XLIB SPCharLeft
-	
-	; Char Left
-	;
-	; Adjusts screen address HL to move one character to the left
-	; on the display.  Start of line wraps to the previous row.
-	;
-	; enter: HL = valid screen address
-	;        Carry reset
-	; exit : Carry = moved off screen
-	;        HL = moves one character left, with line wrap
-	; used : AF, HL
-	
-	;IF !DISP_HIRES
-	
-	SPCharLeft:
-	   ld a,l
-	   dec l
-	   or a
-	   ret nz
-	   ld a,h
-	   sub $08
-	   ld h,a
-	   cp $40
-	   ret
-	
-	;ELSE
-	
-	;.SPCharLeft
-	;   ld a,h
-	;   xor $20
-	;   ld h,a
-	;   cp $58
-	;   ccf
-	;   ret nc
-	;   ld a,l
-	;   dec l
-	;   or a
-	;   ret nz
-	;   ld a,h
-	;   sub $08
-	;   ld h,a
-	;   and $18
-	;   cp $18
-	;   ccf
-	;   ret
-	
-	; ENDIF
-
-	;
-	; CharRight
-	; Alvin Albrecht 2002
-	;
-	
-	;INCLUDE "SPconfig.def"
-	;XLIB SPCharRight
-	
-	; Char Right
-	;
-	; Adjusts screen address HL to move one character to the right
-	; on the display.  End of line wraps to the next row.
-	;
-	; enter: HL = valid screen address
-	;        Carry reset
-	; exit : Carry = moved off screen
-	;        HL = moves one character right, with line wrap
-	; used : AF, HL
-	
-	;IF !DISP_HIRES
-	
-	SPCharRight:
-	   inc l
-	   ret nz
-	   ld a,8
-	   add a,h
-	   ld h,a
-	   cp $58
-	   ccf
-	   ret
-	
-	;ELSE
-	
-	;.SPCharRight
-	;   ld a,h
-	;   xor $20
-	;   ld h,a
-	;   cp $58
-	;   ret nc
-	;   inc l
-	;   ret nz
-	;   ld a,8
-	;   add a,h
-	;   ld h,a
-	;   cp $58
-	;   ccf
-	;   ret
-	
-	; ENDIF
-
 	
 	; Patterned Flood Fill
 	; Alvin Albrecht 2002
 	; Tweaked to work in ZX Basic by Britlion, 2012.
+	; Tweaked to respect IX by El Dr. Gusman, 2012
 	;
 	; This subroutine does a byte-at-a-time breadth-first patterned flood fill.
 	; It works by allocating a circular queue on the stack, with the size of the
@@ -689,6 +271,101 @@ SUB FASTCALL SPPFill (xCoord as uByte, yCoord as uByte, fillPatternAddress as uI
 	; used : ix, af, bc, de, hl
 	; exit : no carry = success, carry = had to bail queue was too small
 	; stack: 3*bc+30 bytes, not including the call to PFILL or interrupts
+
+	JP SPPFill_start 
+	
+	SPGetScrnAddr:
+	   and $07
+	   or $40
+	   ld d,a
+	   ld a,h
+	   rra
+	   rra
+	   rra
+	   and $18
+	   or d
+	   ld d,a
+	
+	   ld a,l
+	   and $07
+	   ld b,a
+	   ld a,$80
+	   jr z, norotate
+	
+	rotloop:
+	   rra
+	   djnz rotloop
+	
+	norotate:
+	   ld b,a
+	   srl l
+	   srl l
+	   srl l
+	   ld a,h
+	   rla
+	   rla
+	   and $e0
+	   or l
+	   ld e,a
+	   ret
+	
+	SPPixelUp:
+	   ld a,h
+	   dec h
+	   and $07
+	   ret nz
+	   ld a,$08
+	   add a,h
+	   ld h,a
+	   ld a,l
+	   sub $20
+	   ld l,a
+	   ret nc
+	   ld a,h
+	   sub $08
+	   ld h,a
+	   cp $40
+	   ret
+
+	SPPixelDown:
+	   inc h
+	   ld a,h
+	   and $07
+	   ret nz
+	   ld a,h
+	   sub $08
+	   ld h,a
+	   ld a,l
+	   add a,$20
+	   ld l,a
+	   ret nc
+	   ld a,h
+	   add a,$08
+	   ld h,a
+	   cp $58
+	   ccf
+	   ret
+
+	SPCharLeft:
+	   ld a,l
+	   dec l
+	   or a
+	   ret nz
+	   ld a,h
+	   sub $08
+	   ld h,a
+	   cp $40
+	   ret
+	
+	SPCharRight:
+	   inc l
+	   ret nz
+	   ld a,8
+	   add a,h
+	   ld h,a
+	   cp $58
+	   ccf
+	   ret
 	
 	SPPFill_start:
 	POP BC ; return address
@@ -696,6 +373,9 @@ SUB FASTCALL SPPFill (xCoord as uByte, yCoord as uByte, fillPatternAddress as uI
 	POP DE ; Gets Fill pattern into DE
 	LD L,A ; Gets Y,X into HL
 	PUSH BC ; Puts return address back
+	
+	PUSH IX ; preserve IX
+
 	LD BC,300 ; Bytes allowed in stack.
 	 
 	 
@@ -860,6 +540,7 @@ SUB FASTCALL SPPFill (xCoord as uByte, yCoord as uByte, fillPatternAddress as uI
 	   add ix,de
 	   ld sp,ix
 	   or a			; make sure carry is clear, indicating success
+	   pop ix
 	   ret
 	
 	; IN/OUT: hl = investigate block, de = new block
@@ -1098,8 +779,7 @@ SUB FASTCALL SPPFill (xCoord as uByte, yCoord as uByte, fillPatternAddress as uI
 	   dec hl			; pattern block now pts at investigate block
 	   ret
 	
-	
-	
 	SPPFill_end:
-	END ASM
+	end asm
+
 END SUB

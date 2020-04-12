@@ -36,6 +36,10 @@ namespace Vectty
             drawArea.PolyToolChanged += DrawArea_PolyToolChanged;
             drawArea.ActionsChanged += DrawArea_ActionsChanged;
             drawArea.GrabFinished += DrawArea_GrabFinished;
+            drawArea.RequestPattern += DrawArea_RequestPattern;
+            drawArea.RequestAllPatterns += DrawArea_RequestAllPatterns;
+            drawArea.SetAllPatterns += DrawArea_SetAllPatterns;
+
             containerForm = new Form();
             containerForm.FormBorderStyle = FormBorderStyle.FixedToolWindow;
             containerForm.ControlBox = false;
@@ -65,8 +69,6 @@ namespace Vectty
             actionListFrm.Move += ActionListFrm_Move;
             windowPanel.Controls.Add(actionListFrm);
 
-           
-
             actionListFrm.CopyActions += ActionListFrm_CopyActions;
             actionListFrm.PasteActions += ActionListFrm_PasteActions;
             actionListFrm.ShiftUpActions += ActionListFrm_ShiftUpActions;
@@ -85,6 +87,7 @@ namespace Vectty
             patternEditorFrm.MinimizeBox = false;
             patternEditorFrm.Visible = true;
             patternEditorFrm.Move += PatternEditorFrm_Move;
+            patternEditorFrm.SelectedPatternChanged += PatternEditorFrm_SelectedPatternChanged;
             windowPanel.Controls.Add(patternEditorFrm);
 
             actionListFrm.Left = containerForm.Right + 5;
@@ -92,6 +95,26 @@ namespace Vectty
             patternEditorFrm.Left = actionListFrm.Right + 5;
             patternEditorFrm.Top = actionListFrm.Top;
             patternEditorFrm.Height = actionListFrm.Height;
+        }
+
+        private void DrawArea_SetAllPatterns(object sender, AllPatternsEventArgs e)
+        {
+            patternEditorFrm.SetPatterns(e.Patterns, e.Append);
+        }
+
+        private void DrawArea_RequestAllPatterns(object sender, AllPatternsEventArgs e)
+        {
+            e.Patterns = patternEditorFrm.GetAllPatterns();
+        }
+
+        private void DrawArea_RequestPattern(object sender, PatternEventArgs e)
+        {
+            e.Pattern = patternEditorFrm.GetPattern(e.Index);
+        }
+
+        private void PatternEditorFrm_SelectedPatternChanged(object sender, IndexEventArgs e)
+        {
+            drawArea.TexturePatternIndex = e.Index;
         }
 
         private void PatternEditorFrm_Move(object sender, EventArgs e)
@@ -435,6 +458,7 @@ namespace Vectty
                 return;
 
             drawArea.Cleanup();
+            patternEditorFrm.Reset();
         }
 
         private void btnOpen_Click(object sender, EventArgs e)
@@ -456,7 +480,7 @@ namespace Vectty
                     return;
 
                 string err = "";
-                if (drawArea.ExportFile(dlg.FileName, dlg.Mode, dlg.IncludeCode, dlg.Identifier, dlg.Address, out err))
+                if (drawArea.ExportFile(dlg.FileName, dlg.Mode, dlg.IncludeCode, dlg.IncludePatterns, dlg.Identifier, dlg.Address, out err))
                     MessageBox.Show("File exported", "Export");
                 else
                     MessageBox.Show(err, "Export");
@@ -486,14 +510,46 @@ namespace Vectty
             drawArea.BackgroundMode = (SpeccyDrawControlBGMode)cbBGMode.SelectedIndex;
         }
 
-        private void toolStripTrackBar1_ValueChanged(object sender, EventArgs e)
-        {
-
-        }
-
         private void tbAlpha_ValueChanged(object sender, EventArgs e)
         {
             drawArea.BackgroundAlpha = tbAlpha.Value / 10.0f;
+        }
+
+        private void btnTextureFill_Click(object sender, EventArgs e)
+        {
+            drawArea.Tool = SpeccyDrawControlTool.TextureFill;
+            pnlTool.BackgroundImage = btnTextureFill.Image;
+        }
+
+        private void btnRefresh_Click(object sender, EventArgs e)
+        {
+            drawArea.RefreshDrawing();
+        }
+
+        private void btnImportTextures_Click(object sender, EventArgs e)
+        {
+            using (var dlg = new OpenFileDialog { Filter = "Vectty drawing|*.vct" })
+            {
+                if (dlg.ShowDialog() != DialogResult.OK)
+                    return;
+
+                DialogResult result = MessageBox.Show("Append patterns?", "Import patterns", MessageBoxButtons.YesNoCancel);
+                bool append = false;
+
+                switch (result)
+                {
+                    case DialogResult.Yes:
+                        append = true;
+                        break;
+                    case DialogResult.No:
+                        append = false;
+                        break;
+                    case DialogResult.Cancel:
+                        return;
+                }
+
+                drawArea.ImportTextures(dlg.FileName, append);
+            }
         }
     }
 }

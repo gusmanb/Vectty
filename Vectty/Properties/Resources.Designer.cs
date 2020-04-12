@@ -283,6 +283,16 @@ namespace Vectty.Properties {
         /// <summary>
         ///   Busca un recurso adaptado de tipo System.Drawing.Bitmap.
         /// </summary>
+        internal static System.Drawing.Bitmap FolderTextured {
+            get {
+                object obj = ResourceManager.GetObject("FolderTextured", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Busca un recurso adaptado de tipo System.Drawing.Bitmap.
+        /// </summary>
         internal static System.Drawing.Bitmap Grab {
             get {
                 object obj = ResourceManager.GetObject("Grab", resourceCulture);
@@ -443,6 +453,16 @@ namespace Vectty.Properties {
         /// <summary>
         ///   Busca un recurso adaptado de tipo System.Drawing.Bitmap.
         /// </summary>
+        internal static System.Drawing.Bitmap Refresh {
+            get {
+                object obj = ResourceManager.GetObject("Refresh", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Busca un recurso adaptado de tipo System.Drawing.Bitmap.
+        /// </summary>
         internal static System.Drawing.Bitmap SetInk {
             get {
                 object obj = ResourceManager.GetObject("SetInk", resourceCulture);
@@ -456,6 +476,16 @@ namespace Vectty.Properties {
         internal static System.Drawing.Bitmap SetPaper {
             get {
                 object obj = ResourceManager.GetObject("SetPaper", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Busca un recurso adaptado de tipo System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap TextureBucket {
+            get {
+                object obj = ResourceManager.GetObject("TextureBucket", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }

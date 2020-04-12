@@ -33,6 +33,9 @@
             this.toolStrip1 = new System.Windows.Forms.ToolStrip();
             this.btnAdd = new System.Windows.Forms.ToolStripButton();
             this.btnDelete = new System.Windows.Forms.ToolStripButton();
+            this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
+            this.btnUp = new System.Windows.Forms.ToolStripButton();
+            this.toolStripButton2 = new System.Windows.Forms.ToolStripButton();
             this.ilPatterns = new System.Windows.Forms.ImageList(this.components);
             this.drawArea = new Vectty.PixelPerfectPicturebox();
             this.fpPatterns = new System.Windows.Forms.FlowLayoutPanel();
@@ -44,7 +47,7 @@
             // panel1
             // 
             this.panel1.Controls.Add(this.toolStrip1);
-            this.panel1.Location = new System.Drawing.Point(37, 6);
+            this.panel1.Location = new System.Drawing.Point(14, 6);
             this.panel1.Name = "panel1";
             this.panel1.Size = new System.Drawing.Size(129, 23);
             this.panel1.TabIndex = 3;
@@ -54,7 +57,10 @@
             this.toolStrip1.GripStyle = System.Windows.Forms.ToolStripGripStyle.Hidden;
             this.toolStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.btnAdd,
-            this.btnDelete});
+            this.btnDelete,
+            this.toolStripSeparator1,
+            this.btnUp,
+            this.toolStripButton2});
             this.toolStrip1.Location = new System.Drawing.Point(0, 0);
             this.toolStrip1.Name = "toolStrip1";
             this.toolStrip1.Size = new System.Drawing.Size(129, 25);
@@ -80,6 +86,31 @@
             this.btnDelete.Size = new System.Drawing.Size(23, 22);
             this.btnDelete.Text = "Remove";
             // 
+            // toolStripSeparator1
+            // 
+            this.toolStripSeparator1.Name = "toolStripSeparator1";
+            this.toolStripSeparator1.Size = new System.Drawing.Size(6, 25);
+            // 
+            // btnUp
+            // 
+            this.btnUp.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            this.btnUp.Image = global::Vectty.Properties.Resources.Up;
+            this.btnUp.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.btnUp.Name = "btnUp";
+            this.btnUp.Size = new System.Drawing.Size(23, 22);
+            this.btnUp.Text = "Move up";
+            this.btnUp.Click += new System.EventHandler(this.btnUp_Click);
+            // 
+            // toolStripButton2
+            // 
+            this.toolStripButton2.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            this.toolStripButton2.Image = global::Vectty.Properties.Resources.Down;
+            this.toolStripButton2.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.toolStripButton2.Name = "toolStripButton2";
+            this.toolStripButton2.Size = new System.Drawing.Size(23, 22);
+            this.toolStripButton2.Text = "toolStripButton2";
+            this.toolStripButton2.Click += new System.EventHandler(this.toolStripButton2_Click);
+            // 
             // ilPatterns
             // 
             this.ilPatterns.ColorDepth = System.Windows.Forms.ColorDepth.Depth8Bit;
@@ -99,6 +130,7 @@
             this.drawArea.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;
             this.drawArea.TabIndex = 0;
             this.drawArea.TabStop = false;
+            this.drawArea.MouseUp += new System.Windows.Forms.MouseEventHandler(this.drawArea_MouseUp);
             // 
             // fpPatterns
             // 
@@ -107,9 +139,12 @@
             | System.Windows.Forms.AnchorStyles.Right)));
             this.fpPatterns.AutoScroll = true;
             this.fpPatterns.Location = new System.Drawing.Point(0, 163);
+            this.fpPatterns.MaximumSize = new System.Drawing.Size(128, 4096);
+            this.fpPatterns.MinimumSize = new System.Drawing.Size(128, 133);
             this.fpPatterns.Name = "fpPatterns";
             this.fpPatterns.Size = new System.Drawing.Size(128, 133);
             this.fpPatterns.TabIndex = 4;
+            this.fpPatterns.Click += new System.EventHandler(this.fpPatterns_Click);
             // 
             // PatternEditor
             // 
@@ -122,7 +157,7 @@
             this.Controls.Add(this.drawArea);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedToolWindow;
             this.MaximizeBox = false;
-            this.MaximumSize = new System.Drawing.Size(386, 4096);
+            this.MaximumSize = new System.Drawing.Size(146, 4096);
             this.MinimizeBox = false;
             this.MinimumSize = new System.Drawing.Size(146, 39);
             this.Name = "PatternEditor";
@@ -145,5 +180,8 @@
         private System.Windows.Forms.ToolStripButton btnDelete;
         private System.Windows.Forms.ImageList ilPatterns;
         private System.Windows.Forms.FlowLayoutPanel fpPatterns;
+        private System.Windows.Forms.ToolStripSeparator toolStripSeparator1;
+        private System.Windows.Forms.ToolStripButton btnUp;
+        private System.Windows.Forms.ToolStripButton toolStripButton2;
     }
 }

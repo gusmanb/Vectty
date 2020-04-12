@@ -20,6 +20,10 @@ namespace Vectty
         public event EventHandler HistoryChanged;
         public event EventHandler PolyToolChanged;
         public event EventHandler GrabFinished;
+        public event EventHandler<PatternEventArgs> RequestPattern;
+        public event EventHandler<AllPatternsEventArgs> RequestAllPatterns;
+        public event EventHandler<AllPatternsEventArgs> SetAllPatterns;
+
         public ZXAttribute ActiveAttribute { get; private set; } = new ZXAttribute();
         public SpeccyDrawControlTool Tool { get; set; }
         public SpeccyDrawControlMode Mode { get; set; }
@@ -32,6 +36,8 @@ namespace Vectty
         int scale = 2;
         public new int Scale { get { return scale; } set { scale = value; SpeccyDrawControl_Resize(this, EventArgs.Empty); } }
         public bool PolyTool { get; private set; }
+        public int TexturePatternIndex { get; set; } = -1;
+
         public new Image BackgroundImage
         {
             get { return bg; }
@@ -136,10 +142,8 @@ namespace Vectty
             {
                 for (int y = 0; y < 24; y++)
                 {
-
                     if (e.ClipRectangle.IntersectsWith(chars[x, y].DoubleArea(scale)))
                     {
-
                         Brush b = new SolidBrush(chars[x, y].Attribute.RGBPaper);
                         e.Graphics.FillRectangle(b, chars[x, y].DoubleArea(scale));
                         b.Dispose();
@@ -168,7 +172,6 @@ namespace Vectty
             }
 
         }
-
 
         public bool Undo()
         {
@@ -376,6 +379,24 @@ namespace Vectty
 
                     len = BitConverter.ToInt32(data, sectionStart);
                     sectionStart += 4;
+
+                    List<byte[]> patterns = new List<byte[]>();
+
+                    for (int pt = 0; pt < len; pt++)
+                    {
+                        byte[] ptData = new byte[8];
+
+                        for (int bt = 0; bt < 8; bt++)
+                            ptData[bt] = data[sectionStart++];
+
+                        patterns.Add(ptData);
+                    }
+
+                    if (SetAllPatterns != null)
+                        SetAllPatterns(this, new AllPatternsEventArgs { Patterns = patterns.ToArray() }); ;
+
+                    len = BitConverter.ToInt32(data, sectionStart);
+                    sectionStart += 4;
                     byte[] tmpData = new byte[len];
                     Buffer.BlockCopy(data, sectionStart, tmpData, 0, len);
                     tmpData = RLDecode(tmpData);
@@ -392,7 +413,7 @@ namespace Vectty
                     if (pixels != null)
                         pixels.Dispose();
 
-                     pixels = new Bitmap(256, 192, PixelFormat.Format32bppArgb);
+                    pixels = new Bitmap(256, 192, PixelFormat.Format32bppArgb);
 
                     foreach (var state in undo)
                         state.Dispose();
@@ -405,9 +426,7 @@ namespace Vectty
                     drawBox.Image = pixels;
                     drawBox.Invalidate();
 
-
                     this.actions = actions;
-
 
                     undo.Clear();
                     redo.Clear();
@@ -425,12 +444,75 @@ namespace Vectty
                 else
                     throw new FormatException();
 
-               
             }
             catch { return false; }
         }
+
+        public bool ImportTextures(string FileName, bool AppendTextures)
+        {
+            try
+            {
+                byte[] data = File.ReadAllBytes(FileName);
+
+                string iden = Encoding.ASCII.GetString(data, 0, 6);
+                if (iden == "VCT1.1")
+                {
+                    List<SCAction> actions = new List<SCAction>();
+
+                    int sectionStart = 6;
+                    int len = BitConverter.ToInt32(data, sectionStart);
+                    sectionStart += 4;
+
+                    for (int buc = 0; buc < len; buc++)
+                    {
+                        actions.Add(new SCAction
+                        {
+                            Tool = (SpeccyDrawControlTool)data[sectionStart],
+                            StartPoint = new Point(data[sectionStart + 1], data[sectionStart + 2]),
+                            EndPoint = new Point(data[sectionStart + 3], data[sectionStart + 4]),
+                            Distance = BitConverter.ToUInt16(data, sectionStart + 5)
+                        });
+
+                        sectionStart += 7;
+                    }
+
+                    len = BitConverter.ToInt32(data, sectionStart);
+                    sectionStart += 4;
+
+                    List<byte[]> patterns = new List<byte[]>();
+
+                    for (int pt = 0; pt < len; pt++)
+                    {
+                        byte[] ptData = new byte[8];
+
+                        for (int bt = 0; bt < 8; bt++)
+                            ptData[bt] = data[sectionStart++];
+
+                        patterns.Add(ptData);
+                    }
+
+                    if (SetAllPatterns != null)
+                        SetAllPatterns(this, new AllPatternsEventArgs { Patterns = patterns.ToArray(), Append = AppendTextures }); ;
+
+                    return true;
+                }
+                else
+                    return false;
+            }
+            catch { return false; }
+        }
+
         public bool SaveFile(string FileName)
         {
+            byte[][] patterns = null;
+
+            if (RequestAllPatterns != null)
+            {
+                AllPatternsEventArgs args = new AllPatternsEventArgs();
+                RequestAllPatterns(this, args);
+                patterns = args.Patterns;
+            }
+
             List<byte> fileBuffer = new List<byte>();
             fileBuffer.AddRange(Encoding.ASCII.GetBytes("VCT1.1"));
 
@@ -444,6 +526,19 @@ namespace Vectty
                 fileBuffer.Add((byte)act.EndPoint.X);
                 fileBuffer.Add((byte)act.EndPoint.Y);
                 fileBuffer.AddRange(BitConverter.GetBytes(act.Distance));
+            }
+
+            if (patterns == null)
+                fileBuffer.AddRange(BitConverter.GetBytes((int)0));
+            else
+            {
+                fileBuffer.AddRange(BitConverter.GetBytes(patterns.Length));
+
+                for (int pt = 0; pt < patterns.Length; pt++)
+                {
+                    for (int bt = 0; bt < 8; bt++)
+                        fileBuffer.Add(patterns[pt][bt]);
+                }
             }
 
             List<byte> attribs = new List<byte>();
@@ -461,7 +556,7 @@ namespace Vectty
 
             return true;
         }
-        public bool ExportFile(string FileName, SpeccyDrawExportMode Mode, bool IncludeFunctions, string Identifier, string Address, out string Error)
+        public bool ExportFile(string FileName, SpeccyDrawExportMode Mode, bool IncludeFunctions, bool IncludePatterns, string Identifier, string Address, out string Error)
         {
             try
             {
@@ -605,12 +700,20 @@ namespace Vectty
 
                             break;
 
-                        //case SpeccyDrawControlTool.BlockEraser:
+                        case SpeccyDrawControlTool.TextureFill:
 
-                        //    cpActions.Add((byte)(currentAction.StartPoint.Y));
-                        //    cpActions.Add((byte)currentAction.StartPoint.X);
+                            cpActions.Add((byte)(currentAction.StartPoint.Y));
+                            cpActions.Add((byte)currentAction.StartPoint.X);
+                            cpActions.Add((byte)currentAction.Distance);
 
-                        //    break;
+                            break;
+
+                            //case SpeccyDrawControlTool.BlockEraser:
+
+                            //    cpActions.Add((byte)(currentAction.StartPoint.Y));
+                            //    cpActions.Add((byte)currentAction.StartPoint.X);
+
+                            //    break;
                     }
                 }
 
@@ -670,6 +773,26 @@ namespace Vectty
                         
                         output.Write(" _\r\n }");
                         output.WriteLine();
+
+                        if (IncludePatterns && RequestAllPatterns != null)
+                        {
+                            var args = new AllPatternsEventArgs();
+                            RequestAllPatterns(this, args);
+
+                            if (args.Patterns != null && args.Patterns.Length != 0)
+                            {
+                                output.WriteLine();
+                                output.WriteLine($"Dim patterns({(args.Patterns.Length * 8) - 1}) as uByte => {{ _");
+                                for (int pt = 0; pt < args.Patterns.Length; pt++)
+                                {
+                                    output.Write("    ");
+                                    for (int bt = 0; bt < 8; bt++)
+                                        output.Write(args.Patterns[pt][bt] + (bt == 7 && pt == args.Patterns.Length - 1 ? "" :  ","));
+                                    output.WriteLine(" _");
+                                }
+                                output.WriteLine("}");
+                            }
+                        }
 
                         if (IncludeFunctions)
                         {
@@ -854,23 +977,6 @@ namespace Vectty
 
             return true;
         }
-
-        public bool BeginGrab(int Index, int Count)
-        {
-            grabIndex = Index;
-            grabCount = Count;
-            var range = actions.GetRange(Index, Count);
-            grabBounds = ComputeBoundingBox(range);
-
-            if (grabBounds == Rectangle.Empty)
-                return false;
-
-            preGrabTool = Tool;
-            Tool = SpeccyDrawControlTool.Grab;
-
-            return true;
-        }
-
         public bool VMirrorOperation(int Index, int Count, bool Absolute)
         {
             if (Index > actions.Count - 1)
@@ -928,7 +1034,34 @@ namespace Vectty
 
             return true;
         }
+        public bool BeginGrab(int Index, int Count)
+        {
+            grabIndex = Index;
+            grabCount = Count;
+            var range = actions.GetRange(Index, Count);
+            grabBounds = ComputeBoundingBox(range);
 
+            if (grabBounds == Rectangle.Empty)
+                return false;
+
+            preGrabTool = Tool;
+            Tool = SpeccyDrawControlTool.Grab;
+
+            return true;
+        }
+        public void RefreshDrawing()
+        {
+            if (pixels != null)
+                pixels.Dispose();
+
+            pixels = new Bitmap(256, 192, PixelFormat.Format32bppArgb);
+
+            RepeatActions(actions, pixels);
+
+            drawBox.Image = pixels;
+            drawBox.Invalidate();
+
+        }
         private Rectangle ComputeBoundingBox(List<SCAction> Actions)
         {
             Rectangle rect = Rectangle.Empty;
@@ -1112,6 +1245,21 @@ namespace Vectty
                     case SpeccyDrawControlTool.Fill:
 
                         FloodFill(op.StartPoint.X, op.StartPoint.Y, null, Bmp, false);
+                        break;
+
+                    case SpeccyDrawControlTool.TextureFill:
+
+                        if (RequestPattern == null)
+                            continue;
+
+                        var args = new PatternEventArgs { Index = op.Distance };
+
+                        RequestPattern(this, args);
+
+                        if (args.Pattern == null || args.Pattern.Length != 8)
+                            continue;
+
+                        FloodFill(op.StartPoint.X, op.StartPoint.Y, args.Pattern, Bmp, false);
                         break;
                 }
             }
@@ -1742,6 +1890,27 @@ namespace Vectty
                     Invalidate();
                     break;
 
+                case SpeccyDrawControlTool.TextureFill:
+
+                    if (RequestPattern == null)
+                        return;
+
+                    var args = new PatternEventArgs { Index = TexturePatternIndex };
+
+                    RequestPattern(this, args);
+
+                    if (args.Pattern == null || args.Pattern.Length != 8)
+                        return;
+
+                    FloodFill(startPoint.X, startPoint.Y, args.Pattern, pixels);
+                    actions.Add(new SCAction { Tool = SpeccyDrawControlTool.TextureFill, StartPoint = startPoint, Distance = (ushort)TexturePatternIndex });
+
+                    if (ActionsChanged != null)
+                        ActionsChanged(this, EventArgs.Empty);
+
+                    Invalidate();
+                    break;
+
                 case SpeccyDrawControlTool.Brush:
 
                     if (Mode == SpeccyDrawControlMode.Bitmap)
@@ -2237,6 +2406,18 @@ namespace Vectty
     }
 
 
+    public class PatternEventArgs : EventArgs
+    {
+        public int Index { get; set; }
+        public byte[] Pattern { get; set; }
+    }
+
+    public class AllPatternsEventArgs : EventArgs
+    {
+        public bool Append { get; set; }
+        public byte[][] Patterns { get; set; }
+    }
+
     public enum SpeccyDrawControlTool
     {
         Line,
@@ -2244,7 +2425,7 @@ namespace Vectty
         Circle,
         Arc,
         Fill,
-        //BlockEraser,
+        TextureFill,
         Brush,
         Grab
     }

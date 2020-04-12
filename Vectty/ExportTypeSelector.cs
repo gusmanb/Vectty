@@ -17,6 +17,7 @@ namespace Vectty
         public string Identifier { get; set; }
         public string Address { get; set; }
         public bool IncludeCode { get; set; }
+        public bool IncludePatterns { get; set; }
 
         public ExportTypeSelector()
         {
@@ -75,7 +76,7 @@ namespace Vectty
             Identifier = txtIdent.Text;
             Address = txtAddr.Text;
             IncludeCode = ckInclude.Checked;
-
+            IncludePatterns = ckPatterns.Checked;
             DialogResult = DialogResult.OK;
 
             this.Close();
